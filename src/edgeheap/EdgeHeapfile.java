@@ -1,52 +1,27 @@
 package edgeheap;
 
-import diskmgr.Page;
-import global.NID;
-import global.PageId;
 import global.RID;
 import global.EID;
-import global.Convert;
-import global.Descriptor;
 import heap.*;
-import heap.FileAlreadyDeletedException;
-import heap.HFBufMgrException;
-import heap.HFDiskMgrException;
-import heap.HFException;
-import heap.InvalidSlotNumberException;
-import heap.InvalidTupleSizeException;
-import heap.InvalidUpdateException;
-import heap.SpaceNotAvailableException;
 
 import java.io.IOException;
 
-public class EdgeHeapfile extends Heapfile{
+public class EdgeHeapfile extends Heapfile {
 
-    public boolean deleteEdge;
-    public int getEdgeCnt;
-    public Edge getEdge;
-    public EID insertEdge;
-    public EScan openEdgeScan;
-    public boolean updateEdge;
-    private boolean edgestatus;
-    private int EdgeCounter;
-    private byte[] EdgeData;
-    private int EdgeLength;
-    private boolean EdgeUpdateStatus;
-
-    public EdgeHeapfile(String file) throws heap.HFException,
-            heap.HFBufMgrException,
-            heap.HFDiskMgrException,
+    public EdgeHeapfile(String file) throws HFException,
+            HFBufMgrException,
+            HFDiskMgrException,
             IOException {
         super(file);
     }
 
     // delete File
-    public void deleteFile() throws heap.InvalidSlotNumberException,
+    public void deleteFile() throws InvalidSlotNumberException,
             FileAlreadyDeletedException,
-            heap.InvalidTupleSizeException,
-            heap.HFBufMgrException,
-            heap.HFDiskMgrException,
-            IOException{
+            InvalidTupleSizeException,
+            HFBufMgrException,
+            HFDiskMgrException,
+            IOException {
         super.deleteFile();
     }
 
@@ -56,23 +31,20 @@ public class EdgeHeapfile extends Heapfile{
             HFException,
             HFBufMgrException,
             HFDiskMgrException,
-            Exception
-    {
-        edgestatus = super.deleteRecord(eid);
-        return edgestatus;
+            Exception {
+        boolean status = super.deleteRecord(eid);
+        return status;
     }
-
 
     //count Edge
-    public int getEdgeCnt() throws heap.InvalidSlotNumberException,
-            heap.InvalidTupleSizeException,
-            heap.HFDiskMgrException,
-            heap.HFBufMgrException,
-            IOException{
-        EdgeCounter = super.getRecCnt();
+    public int getEdgeCnt() throws InvalidSlotNumberException,
+            InvalidTupleSizeException,
+            HFDiskMgrException,
+            HFBufMgrException,
+            IOException {
+        int EdgeCounter = super.getRecCnt();
         return EdgeCounter;
     }
-
 
     //Get edge
     public Edge getEdge(EID eid) throws InvalidSlotNumberException,
@@ -80,18 +52,15 @@ public class EdgeHeapfile extends Heapfile{
             HFException,
             HFDiskMgrException,
             HFBufMgrException,
-            Exception
-    {
+            Exception {
         Tuple tuple = super.getRecord(eid);
-        EdgeData = tuple.data;
-        EdgeLength = tuple.tuple_length;
+        byte[] EdgeData = tuple.data;
 
-        // Node offset set 0; data consists of Descriptor and label
-        Edge getedge = new Edge(EdgeData,0,EdgeLength);
+        // Edge offset set 0; data consists of srcNID, dstNID, label and weight
+        Edge edge = new Edge(EdgeData, 0);
 
-        return getedge;
+        return edge;
     }
-
 
     // insert edge
     public EID insertEdge(byte[] edgePtr) throws InvalidSlotNumberException,
@@ -100,8 +69,7 @@ public class EdgeHeapfile extends Heapfile{
             HFException,
             HFBufMgrException,
             HFDiskMgrException,
-            IOException
-    {
+            IOException {
         RID rid = super.insertRecord(edgePtr);
         EID eid = new EID(rid.pageNo, rid.slotNo);
         return eid;
@@ -109,24 +77,21 @@ public class EdgeHeapfile extends Heapfile{
 
     // initilize a EScan
     public EScan openScan()
-            throws heap.InvalidTupleSizeException, IOException
-    {
+            throws InvalidTupleSizeException,
+            IOException {
         EScan newEdgeScan = new EScan(this);
         return newEdgeScan;
     }
 
-
     // Update Edge
-    public boolean updateNode(EID eid, Edge newEdge)throws InvalidSlotNumberException,
+    public boolean updateNode(EID eid, Edge newEdge) throws InvalidSlotNumberException,
             InvalidUpdateException,
             InvalidTupleSizeException,
             HFException,
             HFDiskMgrException,
             HFBufMgrException,
-            Exception
-    {
-        EdgeUpdateStatus = super.updateRecord(eid,newEdge);
-        return EdgeUpdateStatus;
+            Exception {
+        boolean status = super.updateRecord(eid, newEdge);
+        return status;
     }
-
 }

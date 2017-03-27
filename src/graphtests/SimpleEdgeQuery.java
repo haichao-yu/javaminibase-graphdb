@@ -132,7 +132,7 @@ public class SimpleEdgeQuery implements GlobalConst{
                     break;
                 }
                 if (!done) {
-                    edge = new Edge(tuple.data, 0, tuple.getLength());
+                    edge = new Edge(tuple.data, 0);
                     NID srcNID = edge.getSource();
                     NID dstNID = edge.getDestination();
                     System.out.println("[" + nhf.getNode(srcNID).getLabel() + ", " + nhf.getNode(dstNID).getLabel() + ", " + edge.getLabel() + ", " + edge.getWeight() + "]");

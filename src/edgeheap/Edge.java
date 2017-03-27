@@ -6,17 +6,22 @@ import global.NID;
 import java.io.IOException;
 import java.util.Arrays;
 
-import heap.Tuple;
+import heap.*;
 
 /**
  * Created by yhc on 2/18/17.
  */
+
+/**
+ * srcNID (8 bytes) + dstNID (8 bytes) + Label (100 bytes) + Weight (4 bytes) = 120 bytes
+ */
 public class Edge extends Tuple {
 
     /**
-     * Maximum size of any tuple
+     * the maximum length of edge label
+     * (suppose it is 100 bytes)
      */
-    public static final int max_size = MINIBASE_PAGESIZE;
+    public static final int max_length_of_edge_label = 100;
 
     /**
      * a byte array to hold data
@@ -48,13 +53,20 @@ public class Edge extends Tuple {
 
     /**
      * Class constructor
-     * Creat a new edge with length = max_size, edge offset = 0.
+     * Create a new edge with length = 120, node offset = 0.
      */
     public Edge() {
         // Creat a new edge
-        data = new byte[max_size];
+        edge_length = 8 + 8 + max_length_of_edge_label + 4; // 120
+        data = new byte[edge_length];
         edge_offset = 0;
-        edge_length = max_size;
+        fldCnt = 4;
+        fldOffset = new short[fldCnt + 1];
+        fldOffset[0] = 0;
+        fldOffset[1] = 8;
+        fldOffset[2] = 16;
+        fldOffset[3] = (short) (fldOffset[2] + max_length_of_edge_label);
+        fldOffset[4] = (short) edge_length;
     }
 
     /**
@@ -62,18 +74,19 @@ public class Edge extends Tuple {
      *
      * @param aedge  a byte array which contains the edge
      * @param offset the offset of the edge in the byte array
-     * @param length the length of the edge
      */
-    public Edge(byte[] aedge, int offset, int length) {
-        data = aedge;
-        edge_offset = offset;
-        edge_length = length;
-        fldOffset = new short[5];
+    public Edge(byte[] aedge, int offset) {
+        edge_length = 8 + 8 + max_length_of_edge_label + 4; // 120
+        data = new byte[edge_length];
+        edge_offset = 0;
+        System.arraycopy(aedge, offset, data, edge_offset, aedge.length - offset);
+        fldCnt = 4;
+        fldOffset = new short[fldCnt + 1];
         fldOffset[0] = 0;
         fldOffset[1] = 8;
         fldOffset[2] = 16;
-        fldOffset[3] = (short) (length - 4);
-        fldOffset[4] = (short) (length);
+        fldOffset[3] = (short) (fldOffset[2] + max_length_of_edge_label);
+        fldOffset[4] = (short) edge_length;
     }
 
     /**
@@ -83,10 +96,15 @@ public class Edge extends Tuple {
      */
     public Edge(Edge fromEdge) {
         data = fromEdge.getEdgeByteArray();
-        edge_length = fromEdge.getLength();
         edge_offset = 0;
-        fldCnt = fromEdge.noOfFlds();
-        fldOffset = fromEdge.copyFldOffset();
+        edge_length = 8 + 8 + max_length_of_edge_label + 4; // 120
+        fldCnt = 4;
+        fldOffset = new short[fldCnt + 1];
+        fldOffset[0] = 0;
+        fldOffset[1] = 8;
+        fldOffset[2] = 16;
+        fldOffset[3] = (short) (fldOffset[2] + max_length_of_edge_label);
+        fldOffset[4] = (short) edge_length;
     }
 
     /**
@@ -105,54 +123,26 @@ public class Edge extends Tuple {
      *
      * @param aedge a byte array which contains the edge
      * @param offset the offset of the edge in the byte array
-     * @param length the length of the edge
      */
-    public void edgeInit(byte[] aedge, int offset, int length) {
-        data = aedge;
-        edge_offset = offset;
-        edge_length = length;
+    public void edgeInit(byte[] aedge, int offset) {
+        System.arraycopy(aedge, offset, data, edge_offset, aedge.length - offset);
     }
 
     /**
      * Set a edge with the given edge length and offset
      *
-     * @param    record     a byte array contains the edge
+     * @param    aedge     a byte array contains the edge
      * @param    offset     the offset of the edge ( =0 by default)
-     * @param    length     the length of the edge
      */
-    public void edgeSet(byte[] record, int offset, int length) {
-        System.arraycopy(record, offset, data, 0, length);
-        edge_offset = 0;
-        edge_length = length;
+    public void edgeSet(byte[] aedge, int offset) {
+        System.arraycopy(aedge, offset, data, edge_offset, aedge.length - offset);
     }
 
     /**
-     * get the length of a edge, call this method if you did not
-     * call setHdr () before
-     *
-     * @return length of this edge in bytes
-     */
-    public int getLength() {
-        return edge_length;
-    }
-
-    /**
-     * get the length of a edge, call this method if you did
-     * call setHdr () before
-     *
      * @return size of this edge in bytes
      */
     public short size() {
-        return ((short) (fldOffset[fldCnt] - edge_offset));
-    }
-
-    /**
-     * get the offset of a edge
-     *
-     * @return offset of the edge in byte array
-     */
-    public int getOffset() {
-        return edge_offset;
+        return (short) edge_length;
     }
 
     /**
@@ -198,7 +188,6 @@ public class Edge extends Tuple {
     public Edge setSource(NID sourceID)
             throws IOException, FieldNumberOutOfBoundException {
         int fldNo = 1;
-        fldOffset[1] = 8;
         Convert.setNIDValue(sourceID, fldOffset[fldNo - 1], data);
         return this;
     }
@@ -206,7 +195,6 @@ public class Edge extends Tuple {
     public Edge setDestination(NID destID)
             throws IOException, FieldNumberOutOfBoundException {
         int fldNo = 2;
-        fldOffset[2] = 16;
         Convert.setNIDValue(destID, fldOffset[fldNo - 1], data);
         return this;
     }
@@ -214,7 +202,6 @@ public class Edge extends Tuple {
     public Edge setLabel(String label)
             throws IOException, FieldNumberOutOfBoundException {
         int fldNo = 3;
-        fldOffset[3] = (short)(16 + label.length() + 2);
         Convert.setStrValue(label, fldOffset[fldNo - 1], data);
         return this;
     }
@@ -222,22 +209,8 @@ public class Edge extends Tuple {
     public Edge setWeight(int weight)
             throws IOException, FieldNumberOutOfBoundException {
         int fldNo = 4;
-        fldOffset[4] = (short) (fldOffset[3] + 4);
-        edge_length = fldOffset[4];
         Convert.setIntValue(weight, fldOffset[fldNo - 1], data);
-        edge_offset = 0;
         return this;
-    }
-
-    @Override
-    public String toString() {
-        return "Edge{" +
-                "data=" + Arrays.toString(data) +
-                ", edge_offset=" + edge_offset +
-                ", edge_length=" + edge_length +
-                ", fldCnt=" + fldCnt +
-                ", fldOffset=" + Arrays.toString(fldOffset) +
-                '}';
     }
 
     /**

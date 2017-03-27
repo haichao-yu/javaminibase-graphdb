@@ -3,18 +3,22 @@ package nodeheap;
 import global.Convert;
 import global.Descriptor;
 import java.io.IOException;
-import heap.Tuple;
+import heap.*;
 
 /**
  * Created by yhc on 2/16/17.
  */
 
+/**
+ * Node: Label (100 bytes) + Descriptor (20 bytes) = 120 bytes
+ */
 public class Node extends Tuple implements Comparable {
 
     /**
-     * Maximum size of any tuple
+     * the maximum length of node label
+     * (suppose it is 100 bytes)
      */
-    public static final int max_size = MINIBASE_PAGESIZE;
+    public static final int max_length_of_node_label = 100;
 
     /**
      * a byte array to hold data
@@ -46,14 +50,18 @@ public class Node extends Tuple implements Comparable {
 
     /**
      * Class constructor
-     * Creat a new node with length = max_size, node offset = 0.
+     * Create a new node with length = 120, node offset = 0.
      */
     public Node() {
         // Creat a new node
-        data = new byte[max_size];
+        node_length = max_length_of_node_label + 20; // 120
+        data = new byte[node_length];
         node_offset = 0;
-        node_length = max_size;
-        fldOffset = new short[3];
+        fldCnt = 2;
+        fldOffset = new short[fldCnt + 1];
+        fldOffset[0] = 0;
+        fldOffset[1] = (short) (fldOffset[0] + max_length_of_node_label);
+        fldOffset[2] = (short) node_length;
     }
 
     /**
@@ -61,17 +69,17 @@ public class Node extends Tuple implements Comparable {
      *
      * @param anode  a byte array which contains the node
      * @param offset the offset of the node in the byte array
-     * @param length the length of the node
      */
-    public Node(byte[] anode, int offset, int length) {
-        data = new byte[length];
-        System.arraycopy(anode, offset, data, offset, length);
+    public Node(byte[] anode, int offset) {
+        node_length = max_length_of_node_label + 20; // 120
+        data = new byte[node_length];
         node_offset = 0;
-        node_length = length;
-        fldOffset = new short[3];
+        System.arraycopy(anode, offset, data, node_offset, anode.length - offset);
+        fldCnt = 2;
+        fldOffset = new short[fldCnt + 1];
         fldOffset[0] = 0;
-        fldOffset[1] = (short) (length - 20);
-        fldOffset[2] = (short) length;
+        fldOffset[1] = (short) (fldOffset[0] + max_length_of_node_label);
+        fldOffset[2] = (short) node_length;
     }
 
     /**
@@ -81,10 +89,13 @@ public class Node extends Tuple implements Comparable {
      */
     public Node(Node fromNode) {
         data = fromNode.getNodeByteArray();
-        node_length = fromNode.getLength();
         node_offset = 0;
-        fldCnt = fromNode.noOfFlds();
-        fldOffset = fromNode.copyFldOffset();
+        node_length = max_length_of_node_label + 20; // 120
+        fldCnt = 2;
+        fldOffset = new short[fldCnt + 1];
+        fldOffset[0] = 0;
+        fldOffset[1] = (short) (fldOffset[0] + max_length_of_node_label);
+        fldOffset[2] = (short) node_length;
     }
 
     /**
@@ -103,54 +114,26 @@ public class Node extends Tuple implements Comparable {
      *
      * @param anode a byte array which contains the node
      * @param offset the offset of the node in the byte array
-     * @param length the length of the node
      */
-    public void nodeInit(byte[] anode, int offset, int length) {
-        data = anode;
-        node_offset = offset;
-        node_length = length;
+    public void nodeInit(byte[] anode, int offset) {
+        System.arraycopy(anode, offset, data, node_offset, anode.length - offset);
     }
 
     /**
      * Set a node with the given node length and offset
      *
-     * @param    record     a byte array contains the node
+     * @param    anode     a byte array contains the node
      * @param    offset     the offset of the node ( =0 by default)
-     * @param    length     the length of the node
      */
-    public void nodeSet(byte[] record, int offset, int length) {
-        System.arraycopy(record, offset, data, 0, length);
-        node_offset = 0;
-        node_length = length;
+    public void nodeSet(byte[] anode, int offset) {
+        System.arraycopy(anode, offset, data, node_offset, anode.length - offset);
     }
 
     /**
-     * get the length of a node, call this method if you did not
-     * call setHdr () before
-     *
-     * @return length of this node in bytes
-     */
-    public int getLength() {
-        return node_length;
-    }
-
-    /**
-     * get the length of a node, call this method if you did
-     * call setHdr () before
-     *
      * @return size of this node in bytes
      */
     public short size() {
-        return ((short) (fldOffset[fldCnt] - node_offset));
-    }
-
-    /**
-     * get the offset of a node
-     *
-     * @return offset of the node in byte array
-     */
-    public int getOffset() {
-        return node_offset;
+        return (short) node_length;
     }
 
     /**
@@ -182,11 +165,7 @@ public class Node extends Tuple implements Comparable {
     public Node setLabel(String label)
             throws IOException, FieldNumberOutOfBoundException {
         int fldNo = 1;
-        fldOffset[0] = 0;
-        fldOffset[1] = (short)(label.length() + 2);
-        fldOffset[2] = (short)(label.length() + 2 + 20);
         Convert.setStrValue(label, fldOffset[fldNo - 1], data);
-        node_length = label.length() + 2 + 20;
         return this;
     }
 

@@ -207,6 +207,7 @@ class SORTDriver extends TestDriver
         String outval = null;
 
         try {
+            // yhc: first time enter get_next(), add all elems to a priority_queue, and delete the first min elem, and return it.
             t = sort.get_next();
         } catch (Exception e) {
             status = FAIL;
@@ -239,6 +240,7 @@ class SORTDriver extends TestDriver
             count++;
 
             try {
+                // yhc: not the first time enter get_next(), just delete the next min elem, and return it.
                 t = sort.get_next();
             } catch (Exception e) {
                 status = FAIL;

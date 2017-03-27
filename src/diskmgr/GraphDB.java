@@ -86,9 +86,7 @@ public class GraphDB extends DB{
 
         DBFirstPage firstpg = new DBFirstPage(apage);
         firstpg.setNumDBPages(num_pages);
-        /**
-         * todo: added special fields for GraphDB
-         */
+
         name_nodeHeap = name + "_nodeHeap";
         name_edgeHeap = name + "_edgeHeap";
         name_bt_node_label = name + "_bt_node_label";

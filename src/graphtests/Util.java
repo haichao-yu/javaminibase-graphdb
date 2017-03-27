@@ -98,7 +98,7 @@ public class Util {
                     e.printStackTrace();
                 }
                 if (status == OK && !done) {
-                    node = new Node(tuple.data, 0, tuple.getLength());
+                    node = new Node(tuple.data, 0);
                     try {
                         KeyClass key = new StringKey(node.getLabel());
                         btf.insert(key, nid); // insertion (yhc)
@@ -165,7 +165,7 @@ public class Util {
                     e.printStackTrace();
                 }
                 if (status == OK && !done) {
-                    edge = new Edge(tuple.data, 0, tuple.getLength());
+                    edge = new Edge(tuple.data, 0);
                     try {
                         switch (type) {
                             case 1:
@@ -249,7 +249,7 @@ public class Util {
                     e.printStackTrace();
                 }
                 if (status == OK && !done) {
-                    edge = new Edge(tuple.data, 0, tuple.getLength());
+                    edge = new Edge(tuple.data, 0);
                     try {
                         int weight = edge.getWeight();
                         KeyClass keyWeight = new IntegerKey(weight);
@@ -315,7 +315,7 @@ public class Util {
                     e.printStackTrace();
                 }
                 if (status == OK && !done) {
-                    node = new Node(tuple.data, 0, tuple.getLength());
+                    node = new Node(tuple.data, 0);
                     try {
                         KeyClass keyDesc = new DescriptorKey(node.getDesc());
                         KeyClass keyZValue = new StringKey(((DescriptorKey)keyDesc).toZValue());

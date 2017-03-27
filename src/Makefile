@@ -4,7 +4,7 @@
 #the assignment to be generated
 
 JARFILES=bufmgr/*.class diskmgr/*.class global/*.class iterator/*.class\
-         heap/*.class chainexception/*.class  btree/*.class index/*.class tests/*.class graphtests/*.class
+         heap/*.class chainexception/*.class  btree/*.class index/*.class tests/*.class graphtests/*.class nodeheap/*.class edgeheap/*.class ZIndex/*.class
 
 JDKPATH = /Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/
 LIBPATH = .:..
@@ -41,7 +41,10 @@ db:
 doc:
 	$(JAVADOC) $(DOCFILES)
 
-test: 
+test:
+	cd tests; make bmtest dbtest; whoami; make hftest bttest indextest jointest sorttest sortmerge;
+
+graphtest: 
 	cd graphtests; make graphtest;
 
 clean:

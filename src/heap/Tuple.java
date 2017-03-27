@@ -353,11 +353,10 @@ public class Tuple implements GlobalConst {
      * @param    types       contains the types that will be in this tuple
      * @param    strSizes    contains the sizes of the string
      */
-
     public void setHdr(short numFlds, AttrType types[], short strSizes[])
             throws IOException, InvalidTypeException, InvalidTupleSizeException {
         if ((numFlds + 2) * 2 > max_size)
-            throw new InvalidTupleSizeException(null, "TUPLE: TUPLE_TOOBIG_ERROR");
+            throw new InvalidTupleSizeException(null, "TUPLE: TUPLE_TOO_BIG_ERROR");
 
         fldCnt = numFlds;
         Convert.setShortValue(numFlds, tuple_offset, data);

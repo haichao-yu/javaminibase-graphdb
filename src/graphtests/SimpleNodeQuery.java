@@ -136,7 +136,7 @@ public class SimpleNodeQuery implements GlobalConst{
                     break;
                 }
                 if (!done) {
-                    node = new Node(tuple.data, 0, tuple.getLength());
+                    node = new Node(tuple.data, 0);
                     node.print();
                 }
             } catch (Exception e) {
@@ -208,7 +208,7 @@ public class SimpleNodeQuery implements GlobalConst{
                         break;
                     }
                     if (!done) {
-                        node = new Node(tuple.data, 0, tuple.getLength());
+                        node = new Node(tuple.data, 0);
                         alist.add(node);
                     }
                 } catch (Exception e) {
@@ -270,7 +270,7 @@ public class SimpleNodeQuery implements GlobalConst{
                     break;
                 }
                 if (!done) {
-                    node = new Node(tuple.data, 0, tuple.getLength());
+                    node = new Node(tuple.data, 0);
                     nodes.add(node);
                 }
             } catch (Exception e) {

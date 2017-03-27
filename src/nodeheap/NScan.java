@@ -12,12 +12,8 @@ package nodeheap;
 import java.io.*;
 
 import global.*;
-import bufmgr.*;
-import diskmgr.*;
-import heap.Heapfile;
-import heap.Scan;
-import heap.Tuple;
-//import heap.Scan;
+import heap.*;
+
 /**
  * A NScan object is created ONLY through the function openScan
  * of a HeapFile. It supports the getNext interface which will

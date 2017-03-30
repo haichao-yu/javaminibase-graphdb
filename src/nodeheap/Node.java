@@ -10,15 +10,15 @@ import heap.*;
  */
 
 /**
- * Node: Label (100 bytes) + Descriptor (20 bytes) = 120 bytes
+ * Node: Head (8 bytes) + Label (50 bytes) + '\0' (2 bytes) + Descriptor (20 bytes) = 80 bytes
  */
 public class Node extends Tuple implements Comparable {
 
     /**
      * the maximum length of node label
-     * (suppose it is 100 bytes)
+     * (suppose it is 50 bytes)
      */
-    public static final int max_length_of_node_label = 100;
+    public static final int max_length_of_node_label = 50;
 
     /**
      * a byte array to hold data
@@ -52,16 +52,20 @@ public class Node extends Tuple implements Comparable {
      * Class constructor
      * Create a new node with length = 120, node offset = 0.
      */
-    public Node() {
-        // Creat a new node
-        node_length = max_length_of_node_label + 20; // 120
+    public Node() throws IOException {
+        node_length = 8 + max_length_of_node_label + 2 + 20; // 80
         data = new byte[node_length];
-        node_offset = 0;
+        node_offset = 0; // where head begins
         fldCnt = 2;
         fldOffset = new short[fldCnt + 1];
-        fldOffset[0] = 0;
-        fldOffset[1] = (short) (fldOffset[0] + max_length_of_node_label);
-        fldOffset[2] = (short) node_length;
+        fldOffset[0] = 8; // where data begins
+        fldOffset[1] = (short) (fldOffset[0] + max_length_of_node_label + 2); // 60
+        fldOffset[2] = (short) node_length; // 80
+        // write head to data
+        Convert.setShortValue(fldCnt, 0, data);
+        Convert.setShortValue(fldOffset[0], 2, data);
+        Convert.setShortValue(fldOffset[1], 4, data);
+        Convert.setShortValue(fldOffset[2], 6, data);
     }
 
     /**
@@ -71,15 +75,15 @@ public class Node extends Tuple implements Comparable {
      * @param offset the offset of the node in the byte array
      */
     public Node(byte[] anode, int offset) {
-        node_length = max_length_of_node_label + 20; // 120
+        node_length = 8 + max_length_of_node_label + 2 + 20; // 80
         data = new byte[node_length];
-        node_offset = 0;
+        node_offset = 0; // where head begins
         System.arraycopy(anode, offset, data, node_offset, anode.length - offset);
         fldCnt = 2;
         fldOffset = new short[fldCnt + 1];
-        fldOffset[0] = 0;
-        fldOffset[1] = (short) (fldOffset[0] + max_length_of_node_label);
-        fldOffset[2] = (short) node_length;
+        fldOffset[0] = 8; // where data begins
+        fldOffset[1] = (short) (fldOffset[0] + max_length_of_node_label + 2); // 60
+        fldOffset[2] = (short) node_length; // 80
     }
 
     /**
@@ -88,14 +92,14 @@ public class Node extends Tuple implements Comparable {
      * @param fromNode a byte array which contains the node
      */
     public Node(Node fromNode) {
+        node_length = 8 + max_length_of_node_label + 2 + 20; // 80
         data = fromNode.getNodeByteArray();
-        node_offset = 0;
-        node_length = max_length_of_node_label + 20; // 120
+        node_offset = 0; // where head begins
         fldCnt = 2;
         fldOffset = new short[fldCnt + 1];
-        fldOffset[0] = 0;
-        fldOffset[1] = (short) (fldOffset[0] + max_length_of_node_label);
-        fldOffset[2] = (short) node_length;
+        fldOffset[0] = 8; // where data begins
+        fldOffset[1] = (short) (fldOffset[0] + max_length_of_node_label + 2); // 60
+        fldOffset[2] = (short) node_length; // 80
     }
 
     /**

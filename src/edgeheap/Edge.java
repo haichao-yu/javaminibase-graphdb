@@ -13,15 +13,15 @@ import heap.*;
  */
 
 /**
- * srcNID (8 bytes) + dstNID (8 bytes) + Label (100 bytes) + Weight (4 bytes) = 120 bytes
+ * Edge: Head (12 bytes) + srcNID (8 bytes) + dstNID (8 bytes) + Label (50 bytes) + '\0' (2 bytes) + Weight (4 bytes) = 84 bytes
  */
 public class Edge extends Tuple {
 
     /**
      * the maximum length of edge label
-     * (suppose it is 100 bytes)
+     * (suppose it is 50 bytes)
      */
-    public static final int max_length_of_edge_label = 100;
+    public static final int max_length_of_edge_label = 50;
 
     /**
      * a byte array to hold data
@@ -49,24 +49,30 @@ public class Edge extends Tuple {
      * private field
      * Array of offsets of the fields
      */
-    private short[] fldOffset = new short[5];
+    private short[] fldOffset;
 
     /**
      * Class constructor
-     * Create a new edge with length = 120, node offset = 0.
+     * Create a new edge with length = 84, edge offset = 0.
      */
-    public Edge() {
-        // Creat a new edge
-        edge_length = 8 + 8 + max_length_of_edge_label + 4; // 120
+    public Edge() throws IOException {
+        edge_length = 12 + 8 + 8 + max_length_of_edge_label + 2 + 4; // 84
         data = new byte[edge_length];
-        edge_offset = 0;
+        edge_offset = 0; // where head begins
         fldCnt = 4;
         fldOffset = new short[fldCnt + 1];
-        fldOffset[0] = 0;
-        fldOffset[1] = 8;
-        fldOffset[2] = 16;
-        fldOffset[3] = (short) (fldOffset[2] + max_length_of_edge_label);
-        fldOffset[4] = (short) edge_length;
+        fldOffset[0] = 12; // where data begins
+        fldOffset[1] = (short) (fldOffset[0] + 8); // 20
+        fldOffset[2] = (short) (fldOffset[1] + 8); // 28
+        fldOffset[3] = (short) (fldOffset[2] + max_length_of_edge_label + 2); // 80
+        fldOffset[4] = (short) edge_length; // 84
+        // write head to data
+        Convert.setShortValue(fldCnt, 0, data);
+        Convert.setShortValue(fldOffset[0], 2, data);
+        Convert.setShortValue(fldOffset[1], 4, data);
+        Convert.setShortValue(fldOffset[2], 6, data);
+        Convert.setShortValue(fldOffset[3], 8, data);
+        Convert.setShortValue(fldOffset[4], 10, data);
     }
 
     /**
@@ -76,17 +82,17 @@ public class Edge extends Tuple {
      * @param offset the offset of the edge in the byte array
      */
     public Edge(byte[] aedge, int offset) {
-        edge_length = 8 + 8 + max_length_of_edge_label + 4; // 120
+        edge_length = 12 + 8 + 8 + max_length_of_edge_label + 2 + 4; // 84
         data = new byte[edge_length];
-        edge_offset = 0;
+        edge_offset = 0; // where head begins
         System.arraycopy(aedge, offset, data, edge_offset, aedge.length - offset);
         fldCnt = 4;
         fldOffset = new short[fldCnt + 1];
-        fldOffset[0] = 0;
-        fldOffset[1] = 8;
-        fldOffset[2] = 16;
-        fldOffset[3] = (short) (fldOffset[2] + max_length_of_edge_label);
-        fldOffset[4] = (short) edge_length;
+        fldOffset[0] = 12; // where data begins
+        fldOffset[1] = (short) (fldOffset[0] + 8); // 20
+        fldOffset[2] = (short) (fldOffset[1] + 8); // 28
+        fldOffset[3] = (short) (fldOffset[2] + max_length_of_edge_label + 2); // 80
+        fldOffset[4] = (short) edge_length; // 84
     }
 
     /**
@@ -95,16 +101,16 @@ public class Edge extends Tuple {
      * @param fromEdge a byte array which contains the edge
      */
     public Edge(Edge fromEdge) {
+        edge_length = 16 + 8 + 8 + max_length_of_edge_label + 2 + 4 + 32 + 32; // 84
         data = fromEdge.getEdgeByteArray();
-        edge_offset = 0;
-        edge_length = 8 + 8 + max_length_of_edge_label + 4; // 120
+        edge_offset = 0; // where head begins
         fldCnt = 4;
         fldOffset = new short[fldCnt + 1];
-        fldOffset[0] = 0;
-        fldOffset[1] = 8;
-        fldOffset[2] = 16;
-        fldOffset[3] = (short) (fldOffset[2] + max_length_of_edge_label);
-        fldOffset[4] = (short) edge_length;
+        fldOffset[0] = 12; // where data begins
+        fldOffset[1] = (short) (fldOffset[0] + 8); // 20
+        fldOffset[2] = (short) (fldOffset[1] + 8); // 28
+        fldOffset[3] = (short) (fldOffset[2] + max_length_of_edge_label + 2); // 80
+        fldOffset[4] = (short) edge_length; // 84
     }
 
     /**

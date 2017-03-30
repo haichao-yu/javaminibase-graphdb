@@ -278,6 +278,18 @@ public class Tuple implements GlobalConst {
             throw new FieldNumberOutOfBoundException(null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
     }
 
+    // yhc (for phase 3, Projection.java)
+    public NID getNIDFld(int fldNo)
+            throws IOException, FieldNumberOutOfBoundException {
+        NID val;
+        if ((fldNo > 0) && (fldNo <= fldCnt)) {
+            val = Convert.getNIDValue(fldOffset[fldNo - 1], data);
+            return val;
+        } else {
+            throw new FieldNumberOutOfBoundException(null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+        }
+    }
+
     /**
      * Set this field to integer value
      *
@@ -343,6 +355,17 @@ public class Tuple implements GlobalConst {
             throw new FieldNumberOutOfBoundException(null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
     }
 
+    // yhc (for phase 3, Projection.java)
+    public Tuple setNIDFld(int fldNo, NID val)
+            throws IOException, FieldNumberOutOfBoundException {
+        if ((fldNo > 0) && (fldNo <= fldCnt)) {
+            Convert.setNIDValue(val, fldOffset[fldNo - 1], data);
+            return this;
+        } else {
+            throw new FieldNumberOutOfBoundException(null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+        }
+    }
+
     /**
      * setHdr will set the header of this tuple.
      *
@@ -363,8 +386,8 @@ public class Tuple implements GlobalConst {
         fldOffset = new short[numFlds + 1];
         int pos = tuple_offset + 2;  // start position for fldOffset[]
 
-        //sizeof short =2  +2: array siaze = numFlds +1 (0 - numFilds) and
-        //another 1 for fldCnt
+        // sizeof short = 2
+        // fldCnt + fldOffset[0 .. numFlds]: [1 + (numFlds + 1)] * 2 = (numFlds + 2) * 2
         fldOffset[0] = (short) ((numFlds + 2) * 2 + tuple_offset);
 
         Convert.setShortValue(fldOffset[0], pos, data);
@@ -385,8 +408,18 @@ public class Tuple implements GlobalConst {
                     break;
 
                 case AttrType.attrString:
-                    incr = (short) (strSizes[strCount] + 2);  //strlen in bytes = strlen +2
+                    incr = (short) (strSizes[strCount] + 2);  //strlen in bytes = strlen + 2 ('\0')
                     strCount++;
+                    break;
+
+                // yhc
+                case AttrType.attrDesc:
+                    incr = 20;
+                    break;
+
+                // yhc
+                case AttrType.attrNID:
+                    incr = 8;
                     break;
 
                 default:
@@ -408,7 +441,17 @@ public class Tuple implements GlobalConst {
                 break;
 
             case AttrType.attrString:
-                incr = (short) (strSizes[strCount] + 2);  //strlen in bytes = strlen +2
+                incr = (short) (strSizes[strCount] + 2);  //strlen in bytes = strlen + 2 ('\0')
+                break;
+
+            // yhc
+            case AttrType.attrDesc:
+                incr = 20;
+                break;
+
+            // yhc
+            case AttrType.attrNID:
+                incr = 8;
                 break;
 
             default:
@@ -526,4 +569,3 @@ public class Tuple implements GlobalConst {
         return 0;
     }
 }
-

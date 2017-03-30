@@ -7,6 +7,7 @@ import edgeheap.Edge;
 import edgeheap.EdgeHeapfile;
 import global.*;
 import heap.Tuple;
+import iterator.Iterator;
 import nodeheap.NScan;
 import nodeheap.Node;
 import nodeheap.NodeHeapfile;
@@ -74,16 +75,16 @@ public class SimpleEdgeQuery implements GlobalConst{
                 queryType0(nhf, ehf);
                 break;
             case 1:
-                queryType1(dbName, nhf, ehf);
+                queryType1(dbName, nhf, ehf, index);
                 break;
             case 2:
-                queryType2(dbName, nhf, ehf);
+                queryType2(dbName, nhf, ehf, index);
                 break;
             case 3:
-                queryType3(dbName, nhf, ehf);
+                queryType3(dbName, nhf, ehf, index);
                 break;
             case 4:
-                queryType4(dbName, nhf, ehf);
+                queryType4(dbName, nhf, ehf, index);
                 break;
             case 5:
                 queryType5(dbName, nhf, ehf);
@@ -103,7 +104,7 @@ public class SimpleEdgeQuery implements GlobalConst{
     }
 
     /**
-     *
+     * Print the edge data in the order it occurs in node heap
      * @param nhf
      * @param ehf
      */
@@ -145,14 +146,14 @@ public class SimpleEdgeQuery implements GlobalConst{
     }
 
     /**
-     *
+     * Print the edge data in increasing alphanumerical order of source labels
      * @param dbName
      * @param nhf
      * @param ehf
      */
-    private static void queryType1(String dbName, NodeHeapfile nhf, EdgeHeapfile ehf) {
+    private static void queryType1(String dbName, NodeHeapfile nhf, EdgeHeapfile ehf, int index) {
 
-        System.out.println("Print the edge datain increasing alphanumerical order of source labels: ");
+        System.out.println("Print the edge data in increasing alphanumerical order of source labels: ");
 
         // create btree to index srcLabel of edges
         BTreeFile btfSrcLabel = Util.createBtreeFromStringKeyForEdge(dbName, "btree_edge_srcLabel", nhf, ehf, 1);
@@ -189,9 +190,16 @@ public class SimpleEdgeQuery implements GlobalConst{
         System.out.println("Query completed.\n");
     }
 
-    private static void queryType2(String dbName, NodeHeapfile nhf, EdgeHeapfile ehf) {
+    /**
+     * Print the edge data in increasing alphanumerical order of destination labels
+     *
+     * @param dbName
+     * @param nhf
+     * @param ehf
+     */
+    private static void queryType2(String dbName, NodeHeapfile nhf, EdgeHeapfile ehf, int index) {
 
-        System.out.println("Print the edge datain increasing alphanumerical order of destination labels: ");
+        System.out.println("Print the edge data in increasing alphanumerical order of destination labels: ");
 
         // create btree to index dstLabel of edges
         BTreeFile btfDstLabel = Util.createBtreeFromStringKeyForEdge(dbName, "btree_edge_srcLabel", nhf, ehf, 2);
@@ -228,84 +236,112 @@ public class SimpleEdgeQuery implements GlobalConst{
         System.out.println("Query completed.\n");
     }
 
-    private static void queryType3(String dbName, NodeHeapfile nhf, EdgeHeapfile ehf) {
+    /**
+     * Print the edge data in increasing alphanumerical order of edge labels
+     *
+     * @param dbName
+     * @param nhf
+     * @param ehf
+     */
+    private static void queryType3(String dbName, NodeHeapfile nhf, EdgeHeapfile ehf, int index) {
 
-        System.out.println("Print the edge datain increasing alphanumerical order of edge labels: ");
+        System.out.println("Print the edge data in increasing alphanumerical order of edge labels: ");
 
-        // create btree to index dstLabel of edges
-        BTreeFile btfEdgeLabel = Util.createBtreeFromStringKeyForEdge(dbName, "btree_edge_srcLabel", nhf, ehf, 3);
+        if (index == 1) { // using index
+            // create btree to index dstLabel of edges
+            BTreeFile btfEdgeLabel = Util.createBtreeFromStringKeyForEdge(dbName, "btree_edge_srcLabel", nhf, ehf, 3);
 
-        BTFileScan btfScan = null;
-        KeyDataEntry entry = null;
-        EID eid = null;
-        Edge edge = null;
-        try {
-            btfScan = btfEdgeLabel.new_scan(null, null);
-            while (true) {
-                entry = btfScan.get_next();
-                if (entry != null) {
-                    eid = new EID(((LeafData) (entry.data)).getData().pageNo, ((LeafData) (entry.data)).getData().slotNo);
-                    edge = ehf.getEdge(eid);
-                    NID srcNID = edge.getSource();
-                    NID dstNID = edge.getDestination();
-                    System.out.println("[" + nhf.getNode(srcNID).getLabel() + ", " + nhf.getNode(dstNID).getLabel() + ", " + edge.getLabel() + ", " + edge.getWeight() + "]");
+            BTFileScan btfScan = null;
+            KeyDataEntry entry = null;
+            EID eid = null;
+            Edge edge = null;
+            try {
+                btfScan = btfEdgeLabel.new_scan(null, null);
+                while (true) {
+                    entry = btfScan.get_next();
+                    if (entry != null) {
+                        eid = new EID(((LeafData) (entry.data)).getData().pageNo, ((LeafData) (entry.data)).getData().slotNo);
+                        edge = ehf.getEdge(eid);
+                        NID srcNID = edge.getSource();
+                        NID dstNID = edge.getDestination();
+                        System.out.println("[" + nhf.getNode(srcNID).getLabel() + ", " + nhf.getNode(dstNID).getLabel() + ", " + edge.getLabel() + ", " + edge.getWeight() + "]");
+                    } else {
+                        break;
+                    }
                 }
-                else {
-                    break;
-                }
+                btfScan.DestroyBTreeFileScan();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            btfScan.DestroyBTreeFileScan();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            btfEdgeLabel.destroyFile();
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                btfEdgeLabel.destroyFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else { // index == 0, using sort iterator
+            String edgeHeapFileName = dbName + "_edge";
+            SortAndPrintWithoutIndex(edgeHeapFileName, 3);
         }
 
         System.out.println("Query completed.\n");
     }
 
-    private static void queryType4(String dbName, NodeHeapfile nhf, EdgeHeapfile ehf) {
+    /**
+     * Print the edge data in increasing alphanumerical order of weights
+     *
+     * @param dbName
+     * @param nhf
+     * @param ehf
+     */
+    private static void queryType4(String dbName, NodeHeapfile nhf, EdgeHeapfile ehf, int index) {
 
-        System.out.println("Print the edge datain increasing alphanumerical order of weights: ");
+        System.out.println("Print the edge data in increasing alphanumerical order of weights: ");
 
-        // create btree
-        BTreeFile btfWeight = Util.createBtreeFromWeightForEdge(dbName, "btree_edge_weight", nhf, ehf);
+        if (index == 1) { // using index
+            // create btree
+            BTreeFile btfWeight = Util.createBtreeFromWeightForEdge(dbName, "btree_edge_weight", nhf, ehf);
 
-        BTFileScan btfScan = null;
-        KeyDataEntry entry = null;
-        EID eid = null;
-        Edge edge = null;
-        try {
-            btfScan = btfWeight.new_scan(null, null);
-            while (true) {
-                entry = btfScan.get_next();
-                if (entry != null) {
-                    eid = new EID(((LeafData) (entry.data)).getData().pageNo, ((LeafData) (entry.data)).getData().slotNo);
-                    edge = ehf.getEdge(eid);
-                    NID srcNID = edge.getSource();
-                    NID dstNID = edge.getDestination();
-                    System.out.println("[" + nhf.getNode(srcNID).getLabel() + ", " + nhf.getNode(dstNID).getLabel() + ", " + edge.getLabel() + ", " + edge.getWeight() + "]");
+            BTFileScan btfScan = null;
+            KeyDataEntry entry = null;
+            EID eid = null;
+            Edge edge = null;
+            try {
+                btfScan = btfWeight.new_scan(null, null);
+                while (true) {
+                    entry = btfScan.get_next();
+                    if (entry != null) {
+                        eid = new EID(((LeafData) (entry.data)).getData().pageNo, ((LeafData) (entry.data)).getData().slotNo);
+                        edge = ehf.getEdge(eid);
+                        NID srcNID = edge.getSource();
+                        NID dstNID = edge.getDestination();
+                        System.out.println("[" + nhf.getNode(srcNID).getLabel() + ", " + nhf.getNode(dstNID).getLabel() + ", " + edge.getLabel() + ", " + edge.getWeight() + "]");
+                    } else {
+                        break;
+                    }
                 }
-                else {
-                    break;
-                }
+                btfScan.DestroyBTreeFileScan();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            btfScan.DestroyBTreeFileScan();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            btfWeight.destroyFile();
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                btfWeight.destroyFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else { // index == 0, using sort iterator
+            String edgeHeapFileName = dbName + "_edge";
+            SortAndPrintWithoutIndex(edgeHeapFileName, 4);
         }
 
         System.out.println("Query completed.\n");
     }
 
+    /**
+     * Take a lower and upper bound on edge weights, and print the matching edge data
+     * @param dbName
+     * @param nhf
+     * @param ehf
+     */
     private static void queryType5(String dbName, NodeHeapfile nhf, EdgeHeapfile ehf) {
 
         // get lower and upper bound on edge weights
@@ -332,8 +368,7 @@ public class SimpleEdgeQuery implements GlobalConst{
                     NID srcNID = edge.getSource();
                     NID dstNID = edge.getDestination();
                     System.out.println("[" + nhf.getNode(srcNID).getLabel() + ", " + nhf.getNode(dstNID).getLabel() + ", " + edge.getLabel() + ", " + edge.getWeight() + "]");
-                }
-                else {
+                } else {
                     break;
                 }
             }
@@ -350,8 +385,53 @@ public class SimpleEdgeQuery implements GlobalConst{
         System.out.println("Query completed.\n");
     }
 
+    /**
+     * Print pairs of incident edges
+     */
     private static void queryType6() {
 
         System.out.println("Query completed.\n");
+    }
+
+    /**
+     * HELPER METHOD for sort edge and print information without using index
+     *
+     * @param edgeHeapFileName
+     * @param sortField        sortField=1: sorted by srcLabel; sortField=2: sorted by dstLabel; sortField=3: sorted by edgeLabel; sortField=4: sorted by weight
+     */
+    private static void SortAndPrintWithoutIndex(String edgeHeapFileName, int sortField) {
+
+        Iterator sort = Util.createSortIteratorForEdge(edgeHeapFileName, sortField);
+
+        Tuple tuple = null;
+
+        try {
+            // yhc: first time enter get_next(), add all elems to a priority_queue, and delete the first min elem, and return it.
+            tuple = sort.get_next();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        while (tuple != null) {
+            try {
+                Edge edge = new Edge(tuple.getTupleByteArray(), 0);
+                edge.print();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                // yhc: not the first time enter get_next(), just delete the next min elem, and return it.
+                tuple = sort.get_next();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // close sort
+        try {
+            sort.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

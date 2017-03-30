@@ -7,6 +7,7 @@ import edgeheap.Edge;
 import edgeheap.EdgeHeapfile;
 import global.*;
 import heap.Tuple;
+import iterator.Iterator;
 import nodeheap.NScan;
 import nodeheap.Node;
 import nodeheap.NodeHeapfile;
@@ -185,47 +186,39 @@ public class SimpleNodeQuery implements GlobalConst{
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        else { // processed using only the relevant heap files
-            List<Node> alist = new ArrayList<>();
-            // create node scan
-            NScan nScan = null;
+        } else { // processed using only the relevant heap files (utilize sort iterator)
+            String nodeHeapFileName = dbName + "_node";
+            Iterator sort = Util.createSortIteratorForNode(nodeHeapFileName);
+
+            Tuple tuple = null;
+
             try {
-                nScan = nhf.openScan();
+                // yhc: first time enter get_next(), add all elems to a priority_queue, and delete the first min elem, and return it.
+                tuple = sort.get_next();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            // scan and add node to alist
-            Tuple tuple;
-            Node node;
-            NID nid = new NID();
-            boolean done = false;
-            while (!done) {
+
+            while (tuple != null) {
                 try {
-                    tuple = nScan.getNext(nid);
-                    if (tuple == null) {
-                        done = true;
-                        break;
-                    }
-                    if (!done) {
-                        node = new Node(tuple.data, 0);
-                        alist.add(node);
-                    }
+                    Node node = new Node(tuple.getTupleByteArray(), 0);
+                    node.print();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    // yhc: not the first time enter get_next(), just delete the next min elem, and return it.
+                    tuple = sort.get_next();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            // close scan
-            nScan.closescan();
-            // sort
-            Collections.sort(alist);
-            // print nodes
-            for (Node anode : alist) {
-                try {
-                    anode.print();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
+            // close sort
+            try {
+                sort.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         System.out.println("Query completed.\n");

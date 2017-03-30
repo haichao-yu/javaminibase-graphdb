@@ -84,14 +84,14 @@ public class NodeHeapfile extends Heapfile {
     }
 
     // Update Node
-    public boolean updateNode(NID nid, Node newnode) throws InvalidSlotNumberException,
+    public boolean updateNode(NID nid, Node newNode) throws InvalidSlotNumberException,
             InvalidUpdateException,
             InvalidTupleSizeException,
             HFException,
             HFDiskMgrException,
             HFBufMgrException,
             Exception {
-        boolean status = super.updateRecord(nid, newnode);
+        boolean status = super.updateRecord(nid, newNode);
         return status;
     }
 }

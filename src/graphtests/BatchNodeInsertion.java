@@ -61,8 +61,9 @@ public class BatchNodeInsertion implements GlobalConst {
                 String[] strs = data.get(i).split(" ");
                 String label = strs[0];
                 Descriptor desc = new Descriptor(Integer.parseInt(strs[1]), Integer.parseInt(strs[2]), Integer.parseInt(strs[3]), Integer.parseInt(strs[4]), Integer.parseInt(strs[5]));
-                Node node = new Node();
+                Node node;
                 try {
+                    node = new Node();
                     node.setLabel(strs[0]);
                     node.setDesc(desc);
                     nhf.insertNode(node.getNodeByteArray());

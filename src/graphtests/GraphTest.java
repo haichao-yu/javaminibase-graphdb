@@ -31,11 +31,11 @@ public class GraphTest {
         String[] arguments4 = {"batchedgedelete", "EdgeDeleteData.txt", "yhc"};
         BatchEdgeDeletion.runBatchEdgeDeletion(arguments4);
 
-        String[] arguments5 = {"nodequery", "test1", "700", "5", "0"};
+        String[] arguments5 = {"nodequery", "yhc", "700", "1", "0"};
         // SimpleNodeQuery.runSimpleNodeQuery(arguments5);
 
-        String[] arguments6 = {"edgequery", "test1", "700", "5", "0"};
-        // SimpleEdgeQuery.runSimpleEdgeQuery(arguments6);
+        String[] arguments6 = {"edgequery", "yhc", "700", "4", "0"};
+        SimpleEdgeQuery.runSimpleEdgeQuery(arguments6);
 
         /*
         while (true) {

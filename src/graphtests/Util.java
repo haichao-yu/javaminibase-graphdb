@@ -10,7 +10,9 @@ import edgeheap.EdgeHeapfile;
 import global.AttrType;
 import global.EID;
 import global.NID;
+import global.TupleOrder;
 import heap.Tuple;
+import iterator.*;
 import nodeheap.NScan;
 import nodeheap.Node;
 import nodeheap.NodeHeapfile;
@@ -121,7 +123,7 @@ public class Util {
      * @param dbName
      * @param nameOfBtree
      * @param ehf
-     * @param type type=1: index srcLabel; type=2: index dstLabel; type = 3: index edge label
+     * @param type type=1: index srcLabel; type=2: index dstLabel; type=3: index edgeLabel
      * @return
      */
     public static BTreeFile createBtreeFromStringKeyForEdge(String dbName, String nameOfBtree, NodeHeapfile nhf, EdgeHeapfile ehf, int type) {
@@ -332,6 +334,108 @@ public class Util {
         nScan.closescan();
 
         return zf;
+    }
+
+    /**
+     * create a sort iterator for node, sorted by node labels
+     *
+     * @param nodeHeapFileName
+     * @return
+     */
+    public static Iterator createSortIteratorForNode(String nodeHeapFileName) {
+
+        AttrType[] attrTypes = new AttrType[2]; // fields attribute types
+        attrTypes[0] = new AttrType(AttrType.attrString);
+        attrTypes[1] = new AttrType(AttrType.attrDesc);
+
+        short[] stringSizes = new short[1]; // size of string field in node
+        stringSizes[0] = (short) Node.max_length_of_node_label;
+
+        TupleOrder[] order = new TupleOrder[2];
+        order[0] = new TupleOrder(TupleOrder.Ascending);
+        order[1] = new TupleOrder(TupleOrder.Descending);
+
+        FldSpec[] projList = new FldSpec[2]; //output - node format
+        RelSpec rel = new RelSpec(RelSpec.outer);
+        projList[0] = new FldSpec(rel, 1);
+        projList[1] = new FldSpec(rel, 2);
+
+        // create file scan on node heap file
+        FileScan fscan = null;
+        try {
+            fscan = new FileScan(nodeHeapFileName, attrTypes, stringSizes, (short) attrTypes.length, projList.length, projList, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // create sort iterator for node
+        Sort sort = null;
+        int sortField = 1; // sort on node label
+        int sortFieldLength = Node.max_length_of_node_label;
+        int SORTPGNUM = 13;
+        try {
+            sort = new Sort(attrTypes, (short) attrTypes.length, stringSizes, fscan, sortField, order[0], sortFieldLength, SORTPGNUM);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return sort;
+    }
+
+    /**
+     * create a sort iterator for edge, sorted by a field in edge
+     *
+     * @param edgeHeapFileName
+     * @param sortField        sortField=1: sorted by srcLabel; sortField=2: sorted by dstLabel; sortField=3: sorted by edgeLabel; sortField=4: sorted by weight
+     * @return
+     */
+    // Todo: sortField = 1 and sortField = 2, we have NID, but we want to sort by node label, which is the problem we need to solve (pinpage error we add node label field to Edge, cause Edge is too long)
+    public static Iterator createSortIteratorForEdge(String edgeHeapFileName, int sortField) {
+
+        AttrType[] attrTypes = new AttrType[4];
+        attrTypes[0] = new AttrType(AttrType.attrNID);
+        attrTypes[1] = new AttrType(AttrType.attrNID);
+        attrTypes[2] = new AttrType(AttrType.attrString);
+        attrTypes[3] = new AttrType(AttrType.attrInteger);
+
+        short[] stringSizes = new short[1];
+        stringSizes[0] = Edge.max_length_of_edge_label;
+
+        TupleOrder[] order = new TupleOrder[2];
+        order[0] = new TupleOrder(TupleOrder.Ascending);
+        order[1] = new TupleOrder(TupleOrder.Descending);
+
+        FldSpec[] projList = new FldSpec[4]; //output - edge format
+        RelSpec rel = new RelSpec(RelSpec.outer);
+        projList[0] = new FldSpec(rel, 1);
+        projList[1] = new FldSpec(rel, 2);
+        projList[2] = new FldSpec(rel, 3);
+        projList[3] = new FldSpec(rel, 4);
+
+        // create file scan on edge heap file
+        FileScan fscan = null;
+        try {
+            fscan = new FileScan(edgeHeapFileName, attrTypes, stringSizes, (short) attrTypes.length, projList.length, projList, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // create sort iterator for node
+        Sort sort = null;
+        int sortFieldLength;
+        if (sortField == 1 || sortField == 2) {
+            sortFieldLength = Node.max_length_of_node_label;
+        } else {
+            sortFieldLength = Edge.max_length_of_edge_label;
+        }
+        int SORTPGNUM = 13;
+        try {
+            sort = new Sort(attrTypes, (short) attrTypes.length, stringSizes, fscan, sortField, order[0], sortFieldLength, SORTPGNUM);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return sort;
     }
 
     /**

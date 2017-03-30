@@ -3,7 +3,7 @@
 #the following macros should be updated according to
 #the assignment to be generated
 
-JARFILES=bufmgr/*.class diskmgr/*.class global/*.class iterator/*.class\
+JARFILES=bufmgr/*.class diskmgr/*.class global/*.class iterator/*.class catalog/*.class\
          heap/*.class chainexception/*.class  btree/*.class index/*.class tests/*.class graphtests/*.class nodeheap/*.class edgeheap/*.class ZIndex/*.class
 
 JDKPATH = /Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home/

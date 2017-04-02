@@ -197,6 +197,29 @@ public class Convert {
         return nid;
     }
 
+    // C.C
+    public static RID getRIDValue(int position, byte[] data)
+            throws IOException {
+        InputStream in;
+        DataInputStream instr;
+        byte tmp[] = new byte[4];
+
+        System.arraycopy(data, position, tmp, 0, 4);
+        in = new ByteArrayInputStream(tmp);
+        instr = new DataInputStream(in);
+        int pid = instr.readInt();
+        PageId pageno = new PageId(pid);
+
+        System.arraycopy(data, position + 4, tmp, 0, 4);
+        in = new ByteArrayInputStream(tmp);
+        instr = new DataInputStream(in);
+        int slotno = instr.readInt();
+
+        RID rid = new RID(pageno, slotno);
+
+        return rid;
+    }
+
     /**
      * update an integer value in the given byte array at the specified position
      *
@@ -369,6 +392,19 @@ public class Convert {
 
         outstr.writeInt(nid.pageNo.pid);
         outstr.writeInt(nid.slotNo);
+        byte[] B = ((ByteArrayOutputStream) out).toByteArray();
+        System.arraycopy(B, 0, data, position, 4);
+        System.arraycopy(B, 4, data, position + 4, 4);
+    }
+
+    // C.C
+    public static void setRIDValue(RID rid, int position, byte[] data)
+            throws IOException {
+        OutputStream out = new ByteArrayOutputStream();
+        DataOutputStream outstr = new DataOutputStream(out);
+
+        outstr.writeInt(rid.pageNo.pid);
+        outstr.writeInt(rid.slotNo);
         byte[] B = ((ByteArrayOutputStream) out).toByteArray();
         System.arraycopy(B, 0, data, position, 4);
         System.arraycopy(B, 4, data, position + 4, 4);

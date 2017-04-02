@@ -53,6 +53,10 @@ public class Projection {
                             Jtuple.setStrFld(i + 1, t1.getStrFld(perm_mat[i].offset));
                             break;
 
+                        case AttrType.attrNID:
+                            Jtuple.setNIDFld(i+1, t1.getNIDFld(perm_mat[i].offset));
+                            break;
+
                         default:
 
                             throw new UnknowAttrType("Don't know how to handle attrSymbol, attrNull");
@@ -73,6 +77,10 @@ public class Projection {
 
                         case AttrType.attrString:
                             Jtuple.setStrFld(i + 1, t2.getStrFld(perm_mat[i].offset));
+                            break;
+
+                        case AttrType.attrNID:
+                            Jtuple.setNIDFld(i+1, t2.getNIDFld(perm_mat[i].offset));
                             break;
 
                         default:

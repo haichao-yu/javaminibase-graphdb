@@ -46,6 +46,8 @@ public class TupleUtils {
         float t1_r, t2_r;
         String t1_s, t2_s;
         Descriptor t1_d, t2_d; // yhc
+        //
+        NID t1_nid, t2_nid;
 
         switch (fldType.attrType) {
             case AttrType.attrInteger:                // Compare two integers.
@@ -93,6 +95,17 @@ public class TupleUtils {
                 }
 
                 return t1_d.distance(t2_d);
+
+            //c.c
+            case AttrType.attrNID:
+                try {
+                   t1_nid = t1.getNIDFld(t1_fld_no);
+                   t2_nid = t2.getNIDFld(t2_fld_no);
+                } catch (FieldNumberOutOfBoundException e) {
+                    throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+                }
+                if (t1_nid.equals(t2_nid)) return 0;
+                return -1;
 
             default:
 

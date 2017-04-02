@@ -290,6 +290,18 @@ public class Tuple implements GlobalConst {
         }
     }
 
+    // CC (for phase 3, IndexScan.java, use RID to be used for both NID and EID)
+    public RID getRIDFld(int fldNo)
+            throws IOException, FieldNumberOutOfBoundException {
+        RID val;
+        if ((fldNo > 0) && (fldNo <= fldCnt)) {
+            val = Convert.getRIDValue(fldOffset[fldNo - 1], data);
+            return val;
+        } else {
+            throw new FieldNumberOutOfBoundException(null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+        }
+    }
+
     /**
      * Set this field to integer value
      *
@@ -360,6 +372,17 @@ public class Tuple implements GlobalConst {
             throws IOException, FieldNumberOutOfBoundException {
         if ((fldNo > 0) && (fldNo <= fldCnt)) {
             Convert.setNIDValue(val, fldOffset[fldNo - 1], data);
+            return this;
+        } else {
+            throw new FieldNumberOutOfBoundException(null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");
+        }
+    }
+
+    // CC (for phase 3, IndexScan.java, use RID to be used for both NID and EID)
+    public Tuple setRIDFld(int fldNo, RID val)
+            throws IOException, FieldNumberOutOfBoundException {
+        if ((fldNo > 0) && (fldNo <= fldCnt)) {
+            Convert.setRIDValue(val, fldOffset[fldNo - 1], data);
             return this;
         } else {
             throw new FieldNumberOutOfBoundException(null, "TUPLE:TUPLE_FLDNO_OUT_OF_BOUND");

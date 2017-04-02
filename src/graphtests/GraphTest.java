@@ -1,5 +1,16 @@
 package graphtests;
 
+import com.sun.tools.doclint.HtmlTag;
+import global.AttrType;
+import global.Descriptor;
+import global.NID;
+import global.PageId;
+import heap.InvalidTupleSizeException;
+import heap.InvalidTypeException;
+import heap.Tuple;
+import iterator.Iterator;
+import iterator.NestedLoopsJoins;
+
 import java.io.IOException;
 import java.util.Scanner;
 

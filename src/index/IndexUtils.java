@@ -138,7 +138,7 @@ public class IndexUtils {
 	    indScan = ((BTreeFile)indFile).new_scan(key2, key1);
 	  }
 	  return indScan;
-	  
+
 	case AttrType.attrReal:
 	  /*
 	    if ((FloatKey)key1.getKey().floatValue() < (FloatKey)key2.getKey().floatValue()) {

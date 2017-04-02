@@ -190,7 +190,8 @@ public class NestedLoopsJoins extends Iterator {
 
 
             RID rid = new RID();
-            while ((inner_tuple = inner.getNext(rid)) != null) {
+            inner_tuple = inner.getNext(rid);
+            while (inner_tuple != null) {
                 inner_tuple.setHdr((short) in2_len, _in2, t2_str_sizescopy);
                 if (PredEval.Eval(RightFilter, inner_tuple, null, _in2, null) == true) {
                     if (PredEval.Eval(OutputFilter, outer_tuple, inner_tuple, _in1, _in2) == true) {
@@ -201,6 +202,7 @@ public class NestedLoopsJoins extends Iterator {
                         return Jtuple;
                     }
                 }
+                inner_tuple = inner.getNext(rid);
             }
 
             // There has been no match. (otherwise, we would have

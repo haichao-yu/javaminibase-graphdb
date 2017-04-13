@@ -1,9 +1,13 @@
 package iterator;
 
-import heap.*;
-import global.*;
+import global.AttrOperator;
+import global.AttrType;
+import heap.FieldNumberOutOfBoundException;
+import heap.InvalidTupleSizeException;
+import heap.InvalidTypeException;
+import heap.Tuple;
 
-import java.io.*;
+import java.io.IOException;
 
 public class PredEval {
     /**
@@ -91,6 +95,12 @@ public class PredEval {
                         tuple1 = value;
                         comparison_type.attrType = AttrType.attrDesc;
                         break;
+                    case AttrType.attrNID: // yhc
+                        value.setHdr((short) 1, val_type, null);
+                        value.setNIDFld(1, temp_ptr.operand1.nid);
+                        tuple1 = value;
+                        comparison_type.attrType = AttrType.attrNID;
+                        break;
                     default:
                         break;
                 }
@@ -126,7 +136,11 @@ public class PredEval {
                         value.setHdr((short) 1, val_type, null);
                         value.setDescFld(1, temp_ptr.operand2.desc);
                         tuple2 = value;
-                        comparison_type.attrType = AttrType.attrDesc;
+                        break;
+                    case AttrType.attrNID: // yhc
+                        value.setHdr((short) 1, val_type, null);
+                        value.setNIDFld(1, temp_ptr.operand2.nid);
+                        tuple2 = value;
                         break;
                     default:
                         break;

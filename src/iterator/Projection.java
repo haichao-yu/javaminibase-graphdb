@@ -1,9 +1,10 @@
 package iterator;
 
-import heap.*;
-import global.*;
+import global.AttrType;
+import heap.FieldNumberOutOfBoundException;
+import heap.Tuple;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Jtuple has the appropriate types.
@@ -53,6 +54,10 @@ public class Projection {
                             Jtuple.setStrFld(i + 1, t1.getStrFld(perm_mat[i].offset));
                             break;
 
+                        case AttrType.attrDesc:
+                            Jtuple.setDescFld(i + 1, t1.getDescFld(perm_mat[i].offset));
+                            break;
+
                         case AttrType.attrNID:
                             Jtuple.setNIDFld(i+1, t1.getNIDFld(perm_mat[i].offset));
                             break;
@@ -77,6 +82,10 @@ public class Projection {
 
                         case AttrType.attrString:
                             Jtuple.setStrFld(i + 1, t2.getStrFld(perm_mat[i].offset));
+                            break;
+
+                        case AttrType.attrDesc:
+                            Jtuple.setDescFld(i + 1, t2.getDescFld(perm_mat[i].offset));
                             break;
 
                         case AttrType.attrNID:

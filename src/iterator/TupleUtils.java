@@ -1,15 +1,13 @@
 package iterator;
 
 
-import edgeheap.*;
-import heap.*;
-import global.*;
+import global.AttrType;
+import global.Descriptor;
+import global.NID;
 import heap.FieldNumberOutOfBoundException;
 import heap.Tuple;
-import sun.security.krb5.internal.crypto.Des;
 
-import java.io.*;
-import java.lang.*;
+import java.io.IOException;
 
 /**
  * some useful method when processing Tuple
@@ -419,7 +417,3 @@ public class TupleUtils {
         return res_str_sizes;
     }
 }
-
-
-
-

@@ -3,7 +3,6 @@
 package global;
 
 import java.io.*;
-import java.lang.*;
 
 public class Convert {
 
@@ -163,7 +162,7 @@ public class Convert {
 
         int[] value = new int[5];
         for (int i = 0; i < 5; i++) {
-            System.arraycopy(data, position + i*4, tmp, 0, 4);
+            System.arraycopy(data, position + i * 4, tmp, 0, 4);
             in = new ByteArrayInputStream(tmp);
             instr = new DataInputStream(in);
             value[i] = instr.readInt();
@@ -198,6 +197,7 @@ public class Convert {
     }
 
     // C.C
+    /*
     public static RID getRIDValue(int position, byte[] data)
             throws IOException {
         InputStream in;
@@ -219,14 +219,15 @@ public class Convert {
 
         return rid;
     }
+    */
 
     /**
      * update an integer value in the given byte array at the specified position
      *
-     * @param data a byte array
+     * @param data     a byte array
+     * @param value    the value to be copied into the data[]
+     * @param position the position of tht value in data[]
      * @throws java.io.IOException I/O errors
-     * @param    value the value to be copied into the data[]
-     * @param    position the position of tht value in data[]
      */
     public static void setIntValue(int value, int position, byte[] data)
             throws java.io.IOException {
@@ -253,10 +254,10 @@ public class Convert {
     /**
      * update a float value in the given byte array at the specified position
      *
-     * @param data a byte array
+     * @param data     a byte array
+     * @param value    the value to be copied into the data[]
+     * @param position the position of tht value in data[]
      * @throws java.io.IOException I/O errors
-     * @param    value the value to be copied into the data[]
-     * @param    position the position of tht value in data[]
      */
     public static void setFloValue(float value, int position, byte[] data)
             throws java.io.IOException {
@@ -283,10 +284,10 @@ public class Convert {
     /**
      * update a short integer in the given byte array at the specified position
      *
-     * @param data a byte array
+     * @param data     a byte array
+     * @param value    the value to be copied into data[]
+     * @param position the position of tht value in data[]
      * @throws java.io.IOException I/O errors
-     * @param    value the value to be copied into data[]
-     * @param    position the position of tht value in data[]
      */
     public static void setShortValue(short value, int position, byte[] data)
             throws java.io.IOException {
@@ -398,6 +399,7 @@ public class Convert {
     }
 
     // C.C
+    /*
     public static void setRIDValue(RID rid, int position, byte[] data)
             throws IOException {
         OutputStream out = new ByteArrayOutputStream();
@@ -409,4 +411,5 @@ public class Convert {
         System.arraycopy(B, 0, data, position, 4);
         System.arraycopy(B, 4, data, position + 4, 4);
     }
+    */
 }

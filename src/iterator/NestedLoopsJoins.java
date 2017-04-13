@@ -1,14 +1,13 @@
 package iterator;
 
 
+import bufmgr.PageNotReadException;
+import global.AttrType;
+import global.RID;
 import heap.*;
-import global.*;
-import bufmgr.*;
-import diskmgr.*;
-import index.*;
+import index.IndexException;
 
-import java.lang.*;
-import java.io.*;
+import java.io.IOException;
 
 /**
  * This file contains an implementation of the nested loops join
@@ -50,7 +49,7 @@ public class NestedLoopsJoins extends Iterator {
      * @param t2_str_sizes shows the length of the string fields.
      * @param amt_of_mem   IN PAGES
      * @param am1          access method for left i/p to join
-     * @param relationName access hfapfile for right i/p to join
+     * @param relationName access heapfile for right i/p to join
      * @param outFilter    select expressions
      * @param rightFilter  reference to filter applied on right i/p
      * @param proj_list    shows what input fields go where in the output tuple
@@ -233,9 +232,3 @@ public class NestedLoopsJoins extends Iterator {
         }
     }
 }
-
-
-
-
-
-

@@ -1,18 +1,6 @@
 package graphtests;
 
-import com.sun.tools.doclint.HtmlTag;
-import global.AttrType;
-import global.Descriptor;
-import global.NID;
-import global.PageId;
-import heap.InvalidTupleSizeException;
-import heap.InvalidTypeException;
-import heap.Tuple;
-import iterator.Iterator;
-import iterator.NestedLoopsJoins;
-
 import java.io.IOException;
-import java.util.Scanner;
 
 /**
  * Created by yhc on 3/14/17.
@@ -30,23 +18,28 @@ public class GraphTest {
             System.err.println("IO error: " + e);
         }
 
-        String[] arguments1 = {"batchnodeinsert", "NodeInsertData.txt", "yhc"};
+        String[] arguments1 = {"batchnodeinsert", "NodeInsertDataPhase3.txt", "yhc"};
         BatchNodeInsertion.runBatchNodeInsertion(arguments1);
 
-        String[] arguments2 = {"batchedgeinsert", "EdgeInsertData.txt", "yhc"};
+        String[] arguments2 = {"batchedgeinsert", "EdgeInsertDataPhase3.txt", "yhc"};
         BatchEdgeInsertion.runBatchEdgeInsertion(arguments2);
 
         String[] arguments3 = {"batchnodedelete", "NodeDeleteData.txt", "yhc"};
-        BatchNodeDeletion.runBatchNodeDeletion(arguments3); // have problem
+        // BatchNodeDeletion.runBatchNodeDeletion(arguments3); // have problem
 
         String[] arguments4 = {"batchedgedelete", "EdgeDeleteData.txt", "yhc"};
-        BatchEdgeDeletion.runBatchEdgeDeletion(arguments4);
+        // BatchEdgeDeletion.runBatchEdgeDeletion(arguments4);
 
-        String[] arguments5 = {"nodequery", "yhc", "700", "1", "0"};
+        String[] arguments5 = {"nodequery", "yhc", "700", "1", "1"};
         // SimpleNodeQuery.runSimpleNodeQuery(arguments5);
 
-        String[] arguments6 = {"edgequery", "yhc", "700", "4", "0"};
-        SimpleEdgeQuery.runSimpleEdgeQuery(arguments6);
+        PathExpressionType1 test1 = new PathExpressionType1("yhc", "(1,1,1,1,1)/2/(3,3,3,3,3)/(5,5,5,5,5)", 3);
+        test1.Query();
+        test1.close();
+
+        PathExpressionType2 test2 = new PathExpressionType2("yhc", "1/2/2/2", 3);
+        test2.Query();
+        test2.close();
 
         /*
         while (true) {
@@ -78,6 +71,30 @@ public class GraphTest {
                 SimpleNodeQuery.runSimpleNodeQuery(arguments);
             } else if (arguments.length == 5 && arguments[0].equals("edgequery")) {
                 SimpleEdgeQuery.runSimpleEdgeQuery(arguments);
+            } else if (arguments.length == 2 && arguments[0].equals("PQ1a")) {
+                PathExpressionType1.Query(arguments[1]);
+            } else if (arguments.length == 2 && arguments[0].equals("PQ1b")) {
+
+            } else if (arguments.length == 2 && arguments[0].equals("PQ1c")) {
+
+            } else if (arguments.length == 2 && arguments[0].equals("PQ2a")) {
+
+            } else if (arguments.length == 2 && arguments[0].equals("PQ2b")) {
+
+            } else if (arguments.length == 2 && arguments[0].equals("PQ2c")) {
+
+            } else if (arguments.length == 2 && arguments[0].equals("PQ3a")) {
+
+            } else if (arguments.length == 2 && arguments[0].equals("PQ3b")) {
+
+            } else if (arguments.length == 2 && arguments[0].equals("PQ3c")) {
+
+            } else if (arguments.length == 2 && arguments[0].equals("TQa")) {
+
+            } else if (arguments.length == 2 && arguments[0].equals("TQb")) {
+
+            } else if (arguments.length == 2 && arguments[0].equals("TQc")) {
+ 
             } else {
                 System.out.println("Invalid command! Please input again!");
                 System.out.println();

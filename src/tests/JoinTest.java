@@ -1,19 +1,17 @@
 package tests;
 //originally from : joins.C
 
-import iterator.*;
-import heap.*;
+import btree.BTreeFile;
+import btree.IntegerKey;
 import global.*;
-import index.*;
+import heap.Heapfile;
+import heap.Scan;
+import heap.Tuple;
+import index.IndexScan;
+import iterator.*;
 
-import java.io.*;
-import java.util.*;
-import java.lang.*;
-
-import diskmgr.*;
-import bufmgr.*;
-import btree.*;
-import catalog.*;
+import java.io.IOException;
+import java.util.Vector;
 
 /**
  * Here is the implementation for the tests. There are N tests performed.
@@ -311,7 +309,7 @@ class JoinsDriver implements GlobalConst {
 
         size = t.size();
 
-        // inserting the tuple into file "boats"
+        // inserting the tuple into file "reserves"
         //RID             rid;
         f = null;
         try {
@@ -762,6 +760,7 @@ class JoinsDriver implements GlobalConst {
 
         short[] JJsize = new short[1];
         JJsize[0] = 30;
+
         FldSpec[] proj1 = {
                 new FldSpec(new RelSpec(RelSpec.outer), 2),
                 new FldSpec(new RelSpec(RelSpec.innerRel), 2)
@@ -1635,4 +1634,3 @@ public class JoinTest {
         }
     }
 }
-

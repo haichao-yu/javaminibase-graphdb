@@ -1,5 +1,7 @@
 package graphtests;
 
+import global.SystemDefs;
+
 import java.io.IOException;
 
 /**
@@ -33,13 +35,17 @@ public class GraphTest {
         String[] arguments5 = {"nodequery", "yhc", "700", "1", "1"};
         // SimpleNodeQuery.runSimpleNodeQuery(arguments5);
 
-        PathExpressionType1 test1 = new PathExpressionType1("yhc", "(1,1,1,1,1)/2/(3,3,3,3,3)/(5,5,5,5,5)", 3);
+        PathExpressionType1 test1 = new PathExpressionType1("yhc", "(1,1,1,1,1)/2/(3,3,3,3,3)/(5,5,5,5,5)", 1);
         test1.Query();
         test1.close();
 
         PathExpressionType2 test2 = new PathExpressionType2("yhc", "1/2/2/2", 3);
         test2.Query();
         test2.close();
+
+        PathExpressionType3 test3 = new PathExpressionType3("yhc", "1/5", 1);
+        test3.Query();
+        test3.close();
 
         /*
         while (true) {

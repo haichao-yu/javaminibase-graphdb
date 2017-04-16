@@ -162,6 +162,8 @@ public class NestedLoopsJoins extends Iterator {
                 if (inner != null)     // If this not the first time,
                 {
                     // close scan
+                    while(inner.getNext(new RID()) != null);
+                    inner.closescan();
                     inner = null;
                 }
 
@@ -174,7 +176,7 @@ public class NestedLoopsJoins extends Iterator {
                 if ((outer_tuple = outer.get_next()) == null) {
                     done = true;
                     if (inner != null) {
-
+                        inner.closescan();
                         inner = null;
                     }
 
@@ -224,7 +226,9 @@ public class NestedLoopsJoins extends Iterator {
         if (!closeFlag) {
 
             try {
+                inner = null;
                 outer.close();
+
             } catch (Exception e) {
                 throw new JoinsException(e, "NestedLoopsJoin.java: error in closing iterator.");
             }

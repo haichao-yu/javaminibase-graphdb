@@ -2,12 +2,19 @@ package graphtests;
 
 import global.SystemDefs;
 
+import edgeheap.Edge;
+import global.AttrType;
+import heap.Tuple;
+import iterator.*;
+
+
 import java.io.IOException;
 
 /**
  * Created by yhc on 3/14/17.
  */
 public class GraphTest {
+
 
     public static void main(String[] args) {
 
@@ -46,6 +53,10 @@ public class GraphTest {
         PathExpressionType3 test3 = new PathExpressionType3("yhc", "1/5", 1);
         test3.Query();
         test3.close();
+
+        TriangleExpression test7 = new TriangleExpression("yhc", "3;3;3", 2);
+        test7.Query();
+        test7.close();
 
         /*
         while (true) {

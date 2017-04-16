@@ -103,7 +103,10 @@ public class TupleUtils {
                     throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
                 }
                 if (t1_nid.equals(t2_nid)) return 0;
-                return -1;
+                if (t1_nid.pageNo.pid < t2_nid.pageNo.pid) return -1;
+                if (t1_nid.pageNo.pid > t2_nid.pageNo.pid) return 1;
+                if (t1_nid.slotNo < t2_nid.slotNo) return -1;
+                else return 1;
 
             default:
 
@@ -276,6 +279,13 @@ public class TupleUtils {
             case AttrType.attrString:
                 try {
                     value.setStrFld(fld_no, tuple.getStrFld(fld_no));
+                } catch (FieldNumberOutOfBoundException e) {
+                    throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
+                }
+                break;
+            case AttrType.attrNID:
+                try {
+                    value.setNIDFld(fld_no, tuple.getNIDFld(fld_no));
                 } catch (FieldNumberOutOfBoundException e) {
                     throw new TupleUtilsException(e, "FieldNumberOutOfBoundException is caught by TupleUtils.java");
                 }

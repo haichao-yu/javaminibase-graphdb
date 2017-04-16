@@ -3,11 +3,7 @@ package iterator;
 import java.io.*;
 
 import global.*;
-import bufmgr.*;
-import diskmgr.*;
 import heap.*;
-import index.*;
-import chainexception.*;
 
 /**
  * The Sort class sorts a file. All necessary information are passed as
@@ -47,6 +43,7 @@ public class Sort extends Iterator implements GlobalConst {
 
     private double distance;
     private Descriptor target;
+
 
     /**
      * Set up for merging the runs.
@@ -493,6 +490,11 @@ public class Sort extends Iterator implements GlobalConst {
 
             case AttrType.attrDesc:
                 lastElem.setDescFld(_sort_fld,DesMinvalue);
+                break;
+
+            case AttrType.attrNID:
+                NID NidMinValue = new NID(new PageId(0),0);
+                lastElem.setNIDFld(_sort_fld,NidMinValue);
                 break;
 
             default:

@@ -117,20 +117,16 @@ public class PathExpressionType3 {
     public void Query() {
 
         ArrayList<Path> result = new ArrayList<>();
-        System.out.println("Please specify your bound type: \n 1: bounds on max_num_edge \n 2: bounds on max_total_edge_weight\n");
-        Scanner sc = new Scanner(System.in);
-        int boundType = Integer.parseInt(sc.nextLine());
-        while (boundType != 1 && boundType != 2) {
-            System.out.println("Please given a valid input bound type.");
-            System.out.println("Please specify your bound type: \n 1: bounds on max_num_edge \n 2: bounds on max_total_edge_weight\n");
-            boundType = Integer.parseInt(sc.nextLine());
-        }
+        int boundType;
+        if(expr[1].startsWith("w:"))
+            boundType = 2;
+        else boundType = 1;
 
         // get NID from NN
         String firstNN = expr[0];
         ArrayList<NID> targetNIDs = Util.getNIDsFromFirstNN(firstNN, zf, btfNodeLabel);
         // get bound from expr;
-        int bound = Integer.parseInt(expr[1]);
+        int bound = Integer.parseInt(expr[1].substring(2));
         if (boundType == 1) {//bound on num_edges
             // for every NID, do Operator(NID)
             for (NID nid : targetNIDs) {

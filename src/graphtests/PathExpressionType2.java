@@ -101,8 +101,8 @@ public class PathExpressionType2 {
         for (int i = 1; i < EN.length; i++) {
 
             // set edge condition
-            String targetEN = EN[i];
-            if (ENIsLabelOrWeight(targetEN)) { // target EN is edge label
+            String targetEN = EN[i].substring(2);
+            if (ENIsLabelOrWeight(EN[i])) { // target EN is edge label
                 String targetLabel = targetEN;
 
                 joinExprs[0] = new CondExpr();
@@ -113,7 +113,7 @@ public class PathExpressionType2 {
                 joinExprs[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.innerRel), 3);
                 joinExprs[0].operand2.string = targetLabel;
                 joinExprs[1] = null;
-            } else { // target EN is node label
+            } else { // target EN is max edge weight
                 int maxEdgeWeight = Integer.parseInt(targetEN);
 
                 joinExprs[0] = new CondExpr();
@@ -232,13 +232,8 @@ public class PathExpressionType2 {
      * @return true if EN is label; false if EN is weight
      */
     private boolean ENIsLabelOrWeight(String str) {
-
-        for (int i = 0; i < str.length(); i++) {
-            if (str.charAt(i) == '_') {
-                return true;
-            }
-        }
-
+        if(str.startsWith("l:"))
+            return true;
         return false;
     }
 }

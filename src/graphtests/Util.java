@@ -503,26 +503,28 @@ public class Util {
     /**
      * get target NIDs from first NN
      *
-     * @param firstNN
+     * @param oriFirstNN
      * @param zf z index
      * @param btfNodeLabel btree for node label
      * @return
      */
-    public static ArrayList<NID> getNIDsFromFirstNN(String firstNN, ZFile zf, BTreeFile btfNodeLabel) {
+    public static ArrayList<NID> getNIDsFromFirstNN(String oriFirstNN, ZFile zf, BTreeFile btfNodeLabel) {
 
         ArrayList<NID> targetNIDs = null;
+        String firstNN = oriFirstNN.substring(2);
+        if(oriFirstNN.startsWith("d:")){
+            if (firstNN.charAt(0) == '(' && firstNN.charAt(firstNN.length() - 1) == ')') { // first NN is node descriptor
+                String strDesc = firstNN.substring(1, firstNN.length() - 1);
+                String[] dimensions = strDesc.split(",");
+                Descriptor targetDescriptor = new Descriptor(Integer.parseInt(dimensions[0]), Integer.parseInt(dimensions[1]), Integer.parseInt(dimensions[2]), Integer.parseInt(dimensions[3]), Integer.parseInt(dimensions[4]));
 
-        if (firstNN.charAt(0) == '(' && firstNN.charAt(firstNN.length() - 1) == ')') { // first NN is node descriptor
-            String strDesc = firstNN.substring(1, firstNN.length() - 1);
-            String[] dimensions = strDesc.split(",");
-            Descriptor targetDescriptor = new Descriptor(Integer.parseInt(dimensions[0]), Integer.parseInt(dimensions[1]), Integer.parseInt(dimensions[2]), Integer.parseInt(dimensions[3]), Integer.parseInt(dimensions[4]));
-
-            try {
-                targetNIDs = zf.ZFileRangeScan(new DescriptorKey(targetDescriptor), 0);
-            } catch (Exception e) {
-                e.printStackTrace();
+                try {
+                    targetNIDs = zf.ZFileRangeScan(new DescriptorKey(targetDescriptor), 0);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        } else { // first NN is node label
+        }else { // first NN is node label
             String targeLabel = firstNN;
             targetNIDs = new ArrayList<>();
 

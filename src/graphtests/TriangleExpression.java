@@ -17,6 +17,8 @@ import java.util.Set;
 
 /**
  * Created by changchu on 4/15/17.
+ * Given triangle EN1;EN2;EN3
+ * with each EN = w:EN' | l:EN', the following EN' is the actual EN
  */
 public class TriangleExpression {
     private GraphDBManager gdb;
@@ -54,12 +56,16 @@ public class TriangleExpression {
             e.printStackTrace();
         }
         // get ENs
-        EN = pathExpression.split(";");
+        String[] getEN;
+        EN = new String[3];
+        getEN = pathExpression.split(";");
         ENType = new int[3];
         for (int i = 0; i < 3; i++) {
-            if (EN[i].contains("_"))
+            if (getEN[i].startsWith("l:")) {
                 ENType[i] = 1;
+            }
             else ENType[i] = 2;
+            EN[i] = getEN[i].substring(2);
         }
         // get type
         this.type = type;

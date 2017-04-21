@@ -42,19 +42,19 @@ public class GraphTest {
         String[] arguments5 = {"nodequery", "yhc", "700", "1", "1"};
         // SimpleNodeQuery.runSimpleNodeQuery(arguments5);
 
-        PathExpressionType1 test1 = new PathExpressionType1("yhc", "(1,1,1,1,1)/2/(3,3,3,3,3)/(5,5,5,5,5)", 1);
+        PathExpressionType1 test1 = new PathExpressionType1("yhc", "d:(1,1,1,1,1)/l:2", 1);
         test1.Query();
         test1.close();
 
-        PathExpressionType2 test2 = new PathExpressionType2("yhc", "1/2/2/2", 3);
+        PathExpressionType2 test2 = new PathExpressionType2("yhc", "l:1/w:2/w:2/w:2", 3);
         test2.Query();
         test2.close();
 
-        PathExpressionType3 test3 = new PathExpressionType3("yhc", "1/5", 1);
+        PathExpressionType3 test3 = new PathExpressionType3("yhc", "l:1/w:5", 1);
         test3.Query();
         test3.close();
 
-        TriangleExpression test7 = new TriangleExpression("yhc", "3;3;3", 2);
+        TriangleExpression test7 = new TriangleExpression("yhc", "w:3;w:3;w:3", 2);
         test7.Query();
         test7.close();
 

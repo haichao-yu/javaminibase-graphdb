@@ -18,6 +18,7 @@ import java.util.Set;
 
 /**
  * Created by yhc on 4/9/17.
+ * NN = l:NN' | d:NN', NN' is the actual NN
  */
 
 public class PathExpressionType1 {
@@ -125,19 +126,21 @@ public class PathExpressionType1 {
             }
 
             // get node iterator under node condition
-            String targetNN = NN[i];
-            if (targetNN.charAt(0) == '(' && targetNN.charAt(targetNN.length() - 1) == ')') { // target NN is node descriptor
-                String strDesc = targetNN.substring(1, targetNN.length() - 1);
-                String[] dimensions = strDesc.split(",");
-                Descriptor targetDescriptor = new Descriptor(Integer.parseInt(dimensions[0]), Integer.parseInt(dimensions[1]), Integer.parseInt(dimensions[2]), Integer.parseInt(dimensions[3]), Integer.parseInt(dimensions[4]));
+            String targetNN = NN[i].substring(2);
+            if(NN[i].startsWith("d:")) {
+                if (targetNN.charAt(0) == '(' && targetNN.charAt(targetNN.length() - 1) == ')') { // target NN is node descriptor
+                    String strDesc = targetNN.substring(1, targetNN.length() - 1);
+                    String[] dimensions = strDesc.split(",");
+                    Descriptor targetDescriptor = new Descriptor(Integer.parseInt(dimensions[0]), Integer.parseInt(dimensions[1]), Integer.parseInt(dimensions[2]), Integer.parseInt(dimensions[3]), Integer.parseInt(dimensions[4]));
 
-                joinExprs[0].op = new AttrOperator(AttrOperator.aopEQ);
-                joinExprs[0].next = null;
-                joinExprs[0].type1 = new AttrType(AttrType.attrSymbol);
-                joinExprs[0].type2 = new AttrType(AttrType.attrDesc);
-                joinExprs[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.innerRel), 2);
-                joinExprs[0].operand2.desc = targetDescriptor;
-            } else { // target NN is node label
+                    joinExprs[0].op = new AttrOperator(AttrOperator.aopEQ);
+                    joinExprs[0].next = null;
+                    joinExprs[0].type1 = new AttrType(AttrType.attrSymbol);
+                    joinExprs[0].type2 = new AttrType(AttrType.attrDesc);
+                    joinExprs[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.innerRel), 2);
+                    joinExprs[0].operand2.desc = targetDescriptor;
+                }
+            }else { // target NN is node label
                 String targeLabel = targetNN;
 
                 joinExprs[0].op = new AttrOperator(AttrOperator.aopEQ);

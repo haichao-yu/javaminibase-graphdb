@@ -1,14 +1,7 @@
 package graphtests;
 
-import global.SystemDefs;
-
-import edgeheap.Edge;
-import global.AttrType;
-import heap.Tuple;
-import iterator.*;
-
-
 import java.io.IOException;
+import java.util.Scanner;
 
 /**
  * Created by yhc on 3/14/17.
@@ -33,6 +26,7 @@ public class GraphTest {
         String[] arguments2 = {"batchedgeinsert", "EdgeInsertDataPhase3.txt", "yhc"};
         BatchEdgeInsertion.runBatchEdgeInsertion(arguments2);
 
+        /*
         String[] arguments3 = {"batchnodedelete", "NodeDeleteData.txt", "yhc"};
         // BatchNodeDeletion.runBatchNodeDeletion(arguments3); // have problem
 
@@ -57,11 +51,11 @@ public class GraphTest {
         TriangleExpression test7 = new TriangleExpression("yhc", "w:3;w:3;w:3", 2);
         test7.Query();
         test7.close();
+        */
 
-        /*
         while (true) {
             Scanner in = new Scanner(System.in);
-            System.out.println("Please input your command (input \"help\" to learn supported operations):");
+            System.out.println("Please input your command (input \"help\" to learn supported operations, input \"exit\" to exit):");
             String command = in.nextLine();
             String[] arguments = command.split(" ");
             if (arguments.length == 1 && arguments[0].equals("help")) {
@@ -72,6 +66,18 @@ public class GraphTest {
                 System.out.println("- batchedgedelete EDGEFILENAME GRAPHDBNAME");
                 System.out.println("- nodequery GRAPHDBNAME NUMBUF QTYPE INDEX [QUERYOPTIONS]");
                 System.out.println("- edgequery GRAPHDBNAME NUMBUF QTYPE INDEX [QUERYOPTIONS]");
+                System.out.println("- PQ1a GRAPHDBNAME PATH_EXPRESSION");
+                System.out.println("- PQ1b GRAPHDBNAME PATH_EXPRESSION");
+                System.out.println("- PQ1c GRAPHDBNAME PATH_EXPRESSION");
+                System.out.println("- PQ2a GRAPHDBNAME PATH_EXPRESSION");
+                System.out.println("- PQ2b GRAPHDBNAME PATH_EXPRESSION");
+                System.out.println("- PQ2c GRAPHDBNAME PATH_EXPRESSION");
+                System.out.println("- PQ3a GRAPHDBNAME PATH_EXPRESSION");
+                System.out.println("- PQ3b GRAPHDBNAME PATH_EXPRESSION");
+                System.out.println("- PQ3c GRAPHDBNAME PATH_EXPRESSION");
+                System.out.println("- TQa GRAPHDBNAME PATH_EXPRESSION");
+                System.out.println("- TQb GRAPHDBNAME PATH_EXPRESSIO");
+                System.out.println("- TQc GRAPHDBNAME PATH_EXPRESSIO");
                 System.out.println();
             } else if (arguments.length == 1 && arguments[0].equals("exit")) {
                 System.out.println("Gragh database clesed.");
@@ -88,36 +94,59 @@ public class GraphTest {
                 SimpleNodeQuery.runSimpleNodeQuery(arguments);
             } else if (arguments.length == 5 && arguments[0].equals("edgequery")) {
                 SimpleEdgeQuery.runSimpleEdgeQuery(arguments);
-            } else if (arguments.length == 2 && arguments[0].equals("PQ1a")) {
-                PathExpressionType1.Query(arguments[1]);
-            } else if (arguments.length == 2 && arguments[0].equals("PQ1b")) {
-
-            } else if (arguments.length == 2 && arguments[0].equals("PQ1c")) {
-
-            } else if (arguments.length == 2 && arguments[0].equals("PQ2a")) {
-
-            } else if (arguments.length == 2 && arguments[0].equals("PQ2b")) {
-
-            } else if (arguments.length == 2 && arguments[0].equals("PQ2c")) {
-
-            } else if (arguments.length == 2 && arguments[0].equals("PQ3a")) {
-
-            } else if (arguments.length == 2 && arguments[0].equals("PQ3b")) {
-
-            } else if (arguments.length == 2 && arguments[0].equals("PQ3c")) {
-
-            } else if (arguments.length == 2 && arguments[0].equals("TQa")) {
-
-            } else if (arguments.length == 2 && arguments[0].equals("TQb")) {
-
-            } else if (arguments.length == 2 && arguments[0].equals("TQc")) {
- 
+            } else if (arguments.length == 3 && arguments[0].equals("PQ1a")) {
+                PathExpressionType1 pq1a = new PathExpressionType1(arguments[1], arguments[2], 1);
+                pq1a.Query();
+                pq1a.close();
+            } else if (arguments.length == 3 && arguments[0].equals("PQ1b")) {
+                PathExpressionType1 pq1b = new PathExpressionType1(arguments[1], arguments[2], 2);
+                pq1b.Query();
+                pq1b.close();
+            } else if (arguments.length == 3 && arguments[0].equals("PQ1c")) {
+                PathExpressionType1 pq1c = new PathExpressionType1(arguments[1], arguments[2], 3);
+                pq1c.Query();
+                pq1c.close();
+            } else if (arguments.length == 3 && arguments[0].equals("PQ2a")) {
+                PathExpressionType2 pq2a = new PathExpressionType2(arguments[1], arguments[2], 1);
+                pq2a.Query();
+                pq2a.close();
+            } else if (arguments.length == 3 && arguments[0].equals("PQ2b")) {
+                PathExpressionType2 pq2b = new PathExpressionType2(arguments[1], arguments[2], 2);
+                pq2b.Query();
+                pq2b.close();
+            } else if (arguments.length == 3 && arguments[0].equals("PQ2c")) {
+                PathExpressionType2 pq2c = new PathExpressionType2(arguments[1], arguments[2], 3);
+                pq2c.Query();
+                pq2c.close();
+            } else if (arguments.length == 3 && arguments[0].equals("PQ3a")) {
+                PathExpressionType3 pq3a = new PathExpressionType3(arguments[1], arguments[2], 1);
+                pq3a.Query();
+                pq3a.close();
+            } else if (arguments.length == 3 && arguments[0].equals("PQ3b")) {
+                PathExpressionType3 pq3b = new PathExpressionType3(arguments[1], arguments[2], 2);
+                pq3b.Query();
+                pq3b.close();
+            } else if (arguments.length == 3 && arguments[0].equals("PQ3c")) {
+                PathExpressionType3 pq3c = new PathExpressionType3(arguments[1], arguments[2], 3);
+                pq3c.Query();
+                pq3c.close();
+            } else if (arguments.length == 3 && arguments[0].equals("TQa")) {
+                TriangleExpression tqa = new TriangleExpression(arguments[1], arguments[2], 1);
+                tqa.Query();
+                tqa.close();
+            } else if (arguments.length == 3 && arguments[0].equals("TQb")) {
+                TriangleExpression tqb = new TriangleExpression(arguments[1], arguments[2], 2);
+                tqb.Query();
+                tqb.close();
+            } else if (arguments.length == 3 && arguments[0].equals("TQc")) {
+                TriangleExpression tqc = new TriangleExpression(arguments[1], arguments[2], 3);
+                tqc.Query();
+                tqc.close();
             } else {
                 System.out.println("Invalid command! Please input again!");
                 System.out.println();
             }
         }
-        */
 
         // detete all data file
         try {

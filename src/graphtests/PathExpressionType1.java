@@ -193,7 +193,6 @@ public class PathExpressionType1 {
                 e.printStackTrace();
                 Runtime.getRuntime().exit(1);
             }
-            System.out.println();
             try {
                 tails.close();
             } catch (Exception e) {

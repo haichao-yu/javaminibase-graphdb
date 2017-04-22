@@ -451,7 +451,6 @@ public class Util {
      * @param sortField        sortField=1: sorted by srcLabel; sortField=2: sorted by dstLabel; sortField=3: sorted by edgeLabel; sortField=4: sorted by weight
      * @return
      */
-    // Todo: sortField = 1 and sortField = 2, we have NID, but we want to sort by node label, which is the problem we need to solve (pinpage error we add node label field to Edge, cause Edge is too long)
     public static Iterator createSortIteratorForEdge(String edgeHeapFileName, int sortField) {
 
         AttrType[] attrTypes = new AttrType[4];

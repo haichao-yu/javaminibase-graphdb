@@ -216,6 +216,7 @@ public class PathExpressionType1 {
                 System.out.println(path.toString());
             }
         }
+        System.out.println();
     }
 
     /**

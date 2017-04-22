@@ -66,21 +66,21 @@ public class GraphTest {
                 System.out.println("- batchedgedelete EDGEFILENAME GRAPHDBNAME");
                 System.out.println("- nodequery GRAPHDBNAME NUMBUF QTYPE INDEX [QUERYOPTIONS]");
                 System.out.println("- edgequery GRAPHDBNAME NUMBUF QTYPE INDEX [QUERYOPTIONS]");
-                System.out.println("- PQ1a GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- PQ1b GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- PQ1c GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- PQ2a GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- PQ2b GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- PQ2c GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- PQ3a GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- PQ3b GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- PQ3c GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- TQa GRAPHDBNAME TRIANGLE_EXPRESSION");
-                System.out.println("- TQb GRAPHDBNAME TRIANGLE_EXPRESSION");
-                System.out.println("- TQc GRAPHDBNAME TRIANGLE_EXPRESSION");
+                System.out.println("- PQ1a GRAPHDBNAME PATH_EXPRESSION (NN/.../NN)");
+                System.out.println("- PQ1b GRAPHDBNAME PATH_EXPRESSION (NN/.../NN)");
+                System.out.println("- PQ1c GRAPHDBNAME PATH_EXPRESSION (NN/.../NN)");
+                System.out.println("- PQ2a GRAPHDBNAME PATH_EXPRESSION (NN/EN/.../EN)");
+                System.out.println("- PQ2b GRAPHDBNAME PATH_EXPRESSION (NN/EN/.../EN)");
+                System.out.println("- PQ2c GRAPHDBNAME PATH_EXPRESSION (NN/EN/.../EN)");
+                System.out.println("- PQ3a GRAPHDBNAME PATH_EXPRESSION (NN//Bound)");
+                System.out.println("- PQ3b GRAPHDBNAME PATH_EXPRESSION (NN//Bound)");
+                System.out.println("- PQ3c GRAPHDBNAME PATH_EXPRESSION (NN//Bound)");
+                System.out.println("- TQa GRAPHDBNAME TRIANGLE_EXPRESSION (EN;EN;EN)");
+                System.out.println("- TQb GRAPHDBNAME TRIANGLE_EXPRESSION (EN;EN;EN)");
+                System.out.println("- TQc GRAPHDBNAME TRIANGLE_EXPRESSION (EN;EN;EN)");
                 System.out.println();
             } else if (arguments.length == 1 && arguments[0].equals("exit")) {
-                System.out.println("Gragh database closed.");
+                System.out.println("Graph database closed.");
                 break;
             } else if (arguments.length == 3 && arguments[0].equals("batchnodeinsert")) {
                 BatchNodeInsertion.runBatchNodeInsertion(arguments);

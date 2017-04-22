@@ -70,7 +70,7 @@ public class PathExpressionType3 {
         zf = Util.createZIndexFromZValueForNode(dbName, "zindex", nhf);
 
         // get expression
-        expr = pathExpression.split("/");
+        expr = pathExpression.split("//");
 
         // get type
         this.type = type;
@@ -216,17 +216,20 @@ public class PathExpressionType3 {
             for (Path path : result) {
                 System.out.println(path.toString());
             }
+            System.out.println("Total number of paths: " + result.size());
         } else if (this.type == 2) { // PQ3b: sort the results in the labels of head and tail labels, and output
             Collections.sort(result);
             for (Path path : result) {
                 System.out.println(path.toString());
             }
+            System.out.println("Total number of paths: " + result.size());
         } else { // PQ3c: output only distinct head/tail node label pairs
             Set<Path> set = new HashSet<>();
             set.addAll(result);
             for (Path path : set) {
                 System.out.println(path.toString());
             }
+            System.out.println("Total number of paths: " + set.size());
         }
         System.out.println();
     }
@@ -255,4 +258,3 @@ public class PathExpressionType3 {
         }
     }
 }
-

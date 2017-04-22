@@ -119,6 +119,7 @@ public class TriangleExpression {
             }
             System.out.println("Total number of triangles: " + set.size());
         }
+        System.out.println();
     }
 
 

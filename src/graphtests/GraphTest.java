@@ -75,12 +75,12 @@ public class GraphTest {
                 System.out.println("- PQ3a GRAPHDBNAME PATH_EXPRESSION");
                 System.out.println("- PQ3b GRAPHDBNAME PATH_EXPRESSION");
                 System.out.println("- PQ3c GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- TQa GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- TQb GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- TQc GRAPHDBNAME PATH_EXPRESSION");
+                System.out.println("- TQa GRAPHDBNAME TRIANGLE_EXPRESSION");
+                System.out.println("- TQb GRAPHDBNAME TRIANGLE_EXPRESSION");
+                System.out.println("- TQc GRAPHDBNAME TRIANGLE_EXPRESSION");
                 System.out.println();
             } else if (arguments.length == 1 && arguments[0].equals("exit")) {
-                System.out.println("Gragh database clesed.");
+                System.out.println("Gragh database closed.");
                 break;
             } else if (arguments.length == 3 && arguments[0].equals("batchnodeinsert")) {
                 BatchNodeInsertion.runBatchNodeInsertion(arguments);

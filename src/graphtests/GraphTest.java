@@ -20,13 +20,13 @@ public class GraphTest {
             System.err.println("IO error: " + e);
         }
 
+        /*
         String[] arguments1 = {"batchnodeinsert", "NodeInsertDataPhase3.txt", "yhc"};
         BatchNodeInsertion.runBatchNodeInsertion(arguments1);
 
         String[] arguments2 = {"batchedgeinsert", "EdgeInsertDataPhase3.txt", "yhc"};
         BatchEdgeInsertion.runBatchEdgeInsertion(arguments2);
 
-        /*
         String[] arguments3 = {"batchnodedelete", "NodeDeleteData.txt", "yhc"};
         // BatchNodeDeletion.runBatchNodeDeletion(arguments3); // have problem
 
@@ -76,8 +76,8 @@ public class GraphTest {
                 System.out.println("- PQ3b GRAPHDBNAME PATH_EXPRESSION");
                 System.out.println("- PQ3c GRAPHDBNAME PATH_EXPRESSION");
                 System.out.println("- TQa GRAPHDBNAME PATH_EXPRESSION");
-                System.out.println("- TQb GRAPHDBNAME PATH_EXPRESSIO");
-                System.out.println("- TQc GRAPHDBNAME PATH_EXPRESSIO");
+                System.out.println("- TQb GRAPHDBNAME PATH_EXPRESSION");
+                System.out.println("- TQc GRAPHDBNAME PATH_EXPRESSION");
                 System.out.println();
             } else if (arguments.length == 1 && arguments[0].equals("exit")) {
                 System.out.println("Gragh database clesed.");

@@ -24,7 +24,7 @@ public class GraphDBManager implements GlobalConst {
             sysdef = new SystemDefs(dbPath, 1000, "Clock");
         }
         else { // create
-            sysdef = new SystemDefs(dbPath, 1000, 1000, "Clock");
+            sysdef = new SystemDefs(dbPath, 100000, 1000, "Clock");
         }
     }
 
@@ -35,7 +35,7 @@ public class GraphDBManager implements GlobalConst {
             sysdef = new SystemDefs(dbPath, NUMBUF, "Clock");
         }
         else { // create
-            sysdef = new SystemDefs(dbPath, 1000, NUMBUF, "Clock");
+            sysdef = new SystemDefs(dbPath, 100000, NUMBUF, "Clock");
         }
     }
 

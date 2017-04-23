@@ -127,9 +127,11 @@ public class PathExpressionType3 {
         ArrayList<NID> targetNIDs = Util.getNIDsFromFirstNN(firstNN, zf, btfNodeLabel);
         // get bound from expr;
         int bound = Integer.parseInt(expr[1].substring(2));
+        int temp_bound = 0;
         if (boundType == 1) {//bound on num_edges
             // for every NID, do Operator(NID)
             for (NID nid : targetNIDs) {
+                temp_bound = bound;
                 String head = null;
                 try {
                     head = nhf.getNode(nid).getLabel();
@@ -141,7 +143,7 @@ public class PathExpressionType3 {
                 level0.add(nid);
                 lists.add(level0);
                 int level_idx = 0;
-                while (bound > 0) {
+                while (temp_bound > 0) {
                     LinkedList<NID> temp_level = new LinkedList<>();
                     for (int i = 0; i < lists.get(level_idx).size(); i++) {
                         //edge iterator
@@ -160,12 +162,13 @@ public class PathExpressionType3 {
                     }
                     lists.add(temp_level);
                     level_idx++;
-                    bound--;
+                    temp_bound--;
                 }
             }
         } else if (boundType == 2){ //bound on total_edge_weight
             //traverse on each nid
             for (NID nid : targetNIDs) {
+                temp_bound = bound;
                 String head = null;
                 try {
                     head = nhf.getNode(nid).getLabel();
@@ -174,7 +177,7 @@ public class PathExpressionType3 {
                 }
                 LinkedList<LinkedList<NidWeight>> lists = new LinkedList<>();
                 LinkedList<NidWeight> level0 = new LinkedList<>();
-                level0.add(new NidWeight(nid, bound));
+                level0.add(new NidWeight(nid, temp_bound));
                 lists.add(level0);
                 int level_idx = 0;
                 while (true) {

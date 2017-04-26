@@ -1,5 +1,6 @@
 package graphtests;
 
+import diskmgr.PCounter;
 import edgeheap.Edge;
 import edgeheap.EdgeHeapfile;
 import global.AttrOperator;
@@ -36,6 +37,7 @@ public class TriangleExpression {
     // type = 3: only distinct node label triples
 
     public TriangleExpression(String dbName, String pathExpression, int type) {
+        PCounter.initialize();
         this.dbName = dbName;
         nodeHeapFileName = this.dbName + "_node";
         edgeHeapFileName = this.dbName + "_edge";
@@ -55,6 +57,8 @@ public class TriangleExpression {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
         // get ENs
         String[] getEN;
         EN = new String[3];
@@ -119,6 +123,8 @@ public class TriangleExpression {
             }
             System.out.println("Total number of triangles: " + set.size());
         }
+        // print statistic information
+        Util.printStatInfo(nhf, ehf);
         System.out.println();
     }
 

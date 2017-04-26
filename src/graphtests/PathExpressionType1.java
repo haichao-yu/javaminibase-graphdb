@@ -2,6 +2,7 @@ package graphtests;
 
 import ZIndex.ZFile;
 import btree.BTreeFile;
+import diskmgr.PCounter;
 import edgeheap.EdgeHeapfile;
 import global.AttrOperator;
 import global.AttrType;
@@ -47,6 +48,7 @@ public class PathExpressionType1 {
      */
     public PathExpressionType1(String dbName, String pathExpression, int type) {
 
+        PCounter.initialize();
         // open db
         this.dbName = dbName;
         nodeHeapFileName = this.dbName + "_node";
@@ -67,6 +69,7 @@ public class PathExpressionType1 {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
 
         // build index
         btfNodeLabel = Util.createBtreeFromStringKeyForNode(dbName, "btree_node_label", nhf);
@@ -219,6 +222,8 @@ public class PathExpressionType1 {
             }
             System.out.println("Total number of paths: " + set.size());
         }
+        // print statistic information
+        Util.printStatInfo(nhf, ehf);
         System.out.println();
     }
 

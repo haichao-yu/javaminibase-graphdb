@@ -226,7 +226,10 @@ public class NestedLoopsJoins extends Iterator {
         if (!closeFlag) {
 
             try {
-                inner = null;
+                if (inner != null) {
+                    inner.closescan();
+                    inner = null;
+                }
                 outer.close();
 
             } catch (Exception e) {

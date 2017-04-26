@@ -20,11 +20,11 @@ public class GraphTest {
             System.err.println("IO error: " + e);
         }
 
-        /*
-        String[] arguments1 = {"batchnodeinsert", "NodeInsertDataPhase3.txt", "yhc"};
+
+        String[] arguments1 = {"batchnodeinsert", "Phase3MyNodeInsertData.txt", "yhc"};
         BatchNodeInsertion.runBatchNodeInsertion(arguments1);
 
-        String[] arguments2 = {"batchedgeinsert", "EdgeInsertDataPhase3.txt", "yhc"};
+        String[] arguments2 = {"batchedgeinsert", "Phase3MyEdgeInsertData.txt", "yhc"};
         BatchEdgeInsertion.runBatchEdgeInsertion(arguments2);
 
         String[] arguments3 = {"batchnodedelete", "NodeDeleteData.txt", "yhc"};
@@ -44,15 +44,16 @@ public class GraphTest {
         test2.Query();
         test2.close();
 
-        PathExpressionType3 test3 = new PathExpressionType3("yhc", "l:1/w:5", 1);
+        PathExpressionType3 test3 = new PathExpressionType3("yhc", "l:1//w:5", 1);
         test3.Query();
         test3.close();
 
         TriangleExpression test7 = new TriangleExpression("yhc", "w:3;w:3;w:3", 2);
         test7.Query();
         test7.close();
-        */
 
+
+        /*
         while (true) {
             Scanner in = new Scanner(System.in);
             System.out.println("Please input your command (input \"help\" to learn supported operations, input \"exit\" to exit):");
@@ -147,6 +148,7 @@ public class GraphTest {
                 System.out.println();
             }
         }
+        */
 
         // detete all data file
         try {

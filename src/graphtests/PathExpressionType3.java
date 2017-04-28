@@ -166,6 +166,16 @@ public class PathExpressionType3 {
                     temp_bound--;
                 }
             }
+            // bound on num_edges
+            System.out.print
+                    ("Query: Find the path with bound on num_edges, bound = "
+                            + bound + "\n"
+                            + "  SELECT edge.DestNID\n"
+                            + " From edgeHeapFile edge\n"
+                            + " WHERE edge.SrcNID = givenNID\n"
+                            + " Plan used:\n"
+                            + " |><| Sigma(edge.SrcNID = givenNID)\n");
+
         } else if (boundType == 2){ //bound on total_edge_weight
             //traverse on each nid
             for (NID nid : targetNIDs) {
@@ -213,6 +223,15 @@ public class PathExpressionType3 {
                     }
                 }
             }
+            //bound on total_edge_weight
+            System.out.print
+                    ("Query: Find the path with bound on total_edge_weight, bound = "
+                            + bound + "\n"
+                            + "  SELECT edge.DestNID\n"
+                            + " From edgeHeapFile edge\n"
+                            + " WHERE edge.SrcNID = givenNID && edge.weight <= given_Remaining_Weight\n"
+                            + " Plan used:\n"
+                            + " |><| Sigma(edge.SrcNID = givenNID && edge.weight <= given_Remaining_Weight)\n");
         }
 
 
@@ -235,6 +254,7 @@ public class PathExpressionType3 {
             }
             System.out.println("Total number of paths: " + set.size());
         }
+
         // print statistic information
         Util.printStatInfo(nhf, ehf);
         System.out.println();

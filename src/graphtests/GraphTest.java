@@ -1,7 +1,6 @@
 package graphtests;
 
 import java.io.IOException;
-import java.util.Scanner;
 
 /**
  * Created by yhc on 3/14/17.
@@ -13,8 +12,8 @@ public class GraphTest {
 
         // detete all data file
         try {
-            Runtime.getRuntime().exec("/bin/rm -rf tmpDBFile");
-            Runtime.getRuntime().exec("/bin/mkdir tmpDBFile");
+            Runtime.getRuntime().exec("/bin/rm -rf ../../tmpDBFile");
+            Runtime.getRuntime().exec("/bin/mkdir ../../tmpDBFile");
             // Runtime.getRuntime().exec("/bin/rm -rf tmpDBFile/*.minibase-db tmpDBFile/*.minibase-log");
         } catch (IOException e) {
             System.err.println("IO error: " + e);
@@ -152,7 +151,7 @@ public class GraphTest {
 
         // detete all data file
         try {
-            Runtime.getRuntime().exec("/bin/rm -rf tmpDBFile");
+            Runtime.getRuntime().exec("/bin/rm -rf ../../tmpDBFile");
             // Runtime.getRuntime().exec("/bin/mkdir ../../tmpDBFile");
             // Runtime.getRuntime().exec("/bin/rm -rf tmpDBFile/*.minibase-db tmpDBFile/*.minibase-log");
         } catch (IOException e) {

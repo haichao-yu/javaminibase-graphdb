@@ -17,7 +17,7 @@ public class GraphDBManager implements GlobalConst {
     public GraphDBManager() {}
 
     public void init(String dbname) {
-        dbPath = "tmpDBFile/" + dbname + ".minibase-db";
+        dbPath = "../../tmpDBFile/" + dbname + ".minibase-db";
         // check if the database is already exists
         File file = new File(dbPath);
         if (file.exists()) { // open
@@ -29,7 +29,7 @@ public class GraphDBManager implements GlobalConst {
     }
 
     public void init(String dbname, int NUMBUF) {
-        dbPath = "tmpDBFile/" + dbname + ".minibase-db";
+        dbPath = "../../tmpDBFile/" + dbname + ".minibase-db";
         File file = new File(dbPath);
         if (file.exists()) { // open
             sysdef = new SystemDefs(dbPath, NUMBUF, "Clock");

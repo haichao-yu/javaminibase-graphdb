@@ -3,7 +3,9 @@ package graphtests;
 import btree.*;
 import diskmgr.PCounter;
 import edgeheap.EdgeHeapfile;
-import global.*;
+import global.EID;
+import global.GlobalConst;
+import global.SystemDefs;
 import nodeheap.NodeHeapfile;
 
 import java.io.File;
@@ -38,7 +40,7 @@ public class BatchEdgeDeletion implements GlobalConst {
         String edgeHeapFileName = dbName + "_edge";
 
         // read data from test data file
-        File datafile = new File("testdata/" + dataFileName);
+        File datafile = new File("../../testdata/" + dataFileName);
         ArrayList<String> data = Util.readDataFromFile(datafile);
 
         // create or open node heapfile

@@ -1,6 +1,7 @@
 package graphtests;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 /**
  * Created by yhc on 3/14/17.
@@ -19,7 +20,7 @@ public class GraphTest {
             System.err.println("IO error: " + e);
         }
 
-
+        /*
         String[] arguments1 = {"batchnodeinsert", "Phase3MyNodeInsertData.txt", "yhc"};
         BatchNodeInsertion.runBatchNodeInsertion(arguments1);
 
@@ -50,9 +51,8 @@ public class GraphTest {
         TriangleExpression test7 = new TriangleExpression("yhc", "w:3;w:3;w:3", 2);
         test7.Query();
         test7.close();
+        */
 
-
-        /*
         while (true) {
             Scanner in = new Scanner(System.in);
             System.out.println("Please input your command (input \"help\" to learn supported operations, input \"exit\" to exit):");
@@ -147,7 +147,6 @@ public class GraphTest {
                 System.out.println();
             }
         }
-        */
 
         // detete all data file
         try {

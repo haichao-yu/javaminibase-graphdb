@@ -34,6 +34,7 @@ public class PathExpressionType3 {
     private ZFile zf;
     private String[] expr;
     private int type; // type=1 represents PQ3a, type=2 represents PQ3b, type=3 represents PQ3c
+    private int boundtype; // type = 1 -> num_edges; type = 2 -> total_edge_weight;
 
     /**
      * Constructor
@@ -118,10 +119,9 @@ public class PathExpressionType3 {
     public void Query() {
 
         ArrayList<Path> result = new ArrayList<>();
-        int boundType;
         if(expr[1].startsWith("w:"))
-            boundType = 2;
-        else boundType = 1;
+            boundtype = 2;
+        else boundtype = 1;
 
         // get NID from NN
         String firstNN = expr[0];
@@ -129,7 +129,7 @@ public class PathExpressionType3 {
         // get bound from expr;
         int bound = Integer.parseInt(expr[1].substring(2));
         int temp_bound = 0;
-        if (boundType == 1) {//bound on num_edges
+        if (boundtype == 1) {//bound on num_edges
             // for every NID, do Operator(NID)
             for (NID nid : targetNIDs) {
                 temp_bound = bound;
@@ -166,17 +166,9 @@ public class PathExpressionType3 {
                     temp_bound--;
                 }
             }
-            // bound on num_edges
-            System.out.print
-                    ("Query: Find the path with bound on num_edges, bound = "
-                            + bound + "\n"
-                            + "  SELECT edge.DestNID\n"
-                            + " From edgeHeapFile edge\n"
-                            + " WHERE edge.SrcNID = givenNID\n"
-                            + " Plan used:\n"
-                            + " |><| Sigma(edge.SrcNID = givenNID)\n");
 
-        } else if (boundType == 2){ //bound on total_edge_weight
+
+        } else if (boundtype == 2){ //bound on total_edge_weight
             //traverse on each nid
             for (NID nid : targetNIDs) {
                 temp_bound = bound;
@@ -223,15 +215,7 @@ public class PathExpressionType3 {
                     }
                 }
             }
-            //bound on total_edge_weight
-            System.out.print
-                    ("Query: Find the path with bound on total_edge_weight, bound = "
-                            + bound + "\n"
-                            + "  SELECT edge.DestNID\n"
-                            + " From edgeHeapFile edge\n"
-                            + " WHERE edge.SrcNID = givenNID && edge.weight <= given_Remaining_Weight\n"
-                            + " Plan used:\n"
-                            + " |><| Sigma(edge.SrcNID = givenNID && edge.weight <= given_Remaining_Weight)\n");
+
         }
 
 
@@ -255,6 +239,28 @@ public class PathExpressionType3 {
             System.out.println("Total number of paths: " + set.size());
         }
 
+        //print query plan
+        if (boundtype == 1) {
+            // bound on num_edges
+            System.out.print
+                    ("Query: Find the path with bound on num_edges, bound = "
+                            + bound + "\n"
+                            + "  SELECT edge.DestNID\n"
+                            + " From edgeHeapFile edge\n"
+                            + " WHERE edge.SrcNID = givenNID\n"
+                            + " Plan used:\n"
+                            + " |><| Sigma(edge.SrcNID = givenNID)\n");
+        } else if (boundtype == 2) {
+            //bound on total_edge_weight
+            System.out.print
+                    ("Query: Find the path with bound on total_edge_weight, bound = "
+                            + bound + "\n"
+                            + "  SELECT edge.DestNID\n"
+                            + " From edgeHeapFile edge\n"
+                            + " WHERE edge.SrcNID = givenNID && edge.weight <= given_Remaining_Weight\n"
+                            + " Plan used:\n"
+                            + " |><| Sigma(edge.SrcNID = givenNID && edge.weight <= given_Remaining_Weight)\n");
+        }
         // print statistic information
         Util.printStatInfo(nhf, ehf);
         System.out.println();

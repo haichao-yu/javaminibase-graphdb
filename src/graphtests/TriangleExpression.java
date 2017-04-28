@@ -123,6 +123,30 @@ public class TriangleExpression {
             }
             System.out.println("Total number of triangles: " + set.size());
         }
+
+        System.out.print("Plan used: \n    ");
+        if(this.type == 2)
+            System.out.print("SORT ");
+        if(this.type == 3)
+            System.out.print("DISTINCT ");
+        System.out.print(
+                "Pi(Edge1.source_NID, Edge1.dest_NID, Edge2.dest_NID)\n" +
+                "    Sigma(");
+        for(int k = 1; k < 4; k++) {
+            if (ENType[k-1] == 1)
+                System.out.print("Edge"+ k +".label = \"" + EN[k-1] + "\", ");
+            if (ENType[k-1] == 2)
+                System.out.print("Edge"+ k +".weight = \"" + EN[k-1] + "\", ");
+        }
+        System.out.print("Edge1.source_NID = Edge.dest_NID, Edge2.dest_NID = Edge.source_NID \n" +
+                "       ");
+        System.out.print("((Pi(Edge1.source_NID, Edge1.dest_NID, Edge2.dest_NID, " +
+                "Edge1.label, Edge2.label, Edge1.weight, Edge2.weight) \n" +
+                "       (Edge1 |><| Edge2)) \n" +
+                "           |><| Edge)\n" +
+                "   --- Edge1, Edge2 and Edge are all file scan on edge heap file, \n" +
+                "   --- first use sort-merge join on Edge1 and Edge2, the second join is nested-loop join.\n");
+
         // print statistic information
         Util.printStatInfo(nhf, ehf);
         System.out.println();

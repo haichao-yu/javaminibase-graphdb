@@ -222,6 +222,11 @@ public class PathExpressionType1 {
             }
             System.out.println("Total number of paths: " + set.size());
         }
+
+        // print query plan
+        System.out.println("Plan used (from current node to next node through NN):\n" +
+                "Pi(Node) ((Pi(Edge) (Node |X| (source, edge_condition=null) Edge)) |X| (destination, node_condition=NN) Node)");
+
         // print statistic information
         Util.printStatInfo(nhf, ehf);
         System.out.println();

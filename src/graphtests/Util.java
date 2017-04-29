@@ -732,4 +732,210 @@ public class Util {
         }
         return result;
     }
+
+    /******************************start of new methods Create by Yutang Nie*********************************/
+    /**
+     * Store query result into file, with given file_name
+     * @param data query path result
+     * @param file_name
+     * @return
+     */
+    public static Heapfile createHeapFileFromPathResult(ArrayList<Path> data, String file_name){
+        Heapfile result = null;
+        try {
+            result = new NodeHeapfile(file_name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Tuple tuple = null;
+        short num_of_filds = 2;
+        AttrType[] attrTypes = new AttrType[2];
+        attrTypes[0] = new AttrType(AttrType.attrString);
+        attrTypes[1] = new AttrType(AttrType.attrString);
+        short[] strsize = {Node.max_length_of_node_label, Node.max_length_of_node_label};
+        // insert data to heapfile
+        for (int i = 0; i < data.size(); i++) {
+            tuple = new Tuple();
+            try {
+                tuple.setHdr(num_of_filds,attrTypes,strsize);
+                tuple.setStrFld(1, data.get(i).getHead());
+                tuple.setStrFld(2, data.get(i).getTail());
+                result.insertRecord(tuple.getTupleByteArray());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        return result;
+    }
+
+    /**
+     * create iterator from given heapFileName
+     * @param heapFileName
+     * @param label label is used for selection, if label == null, no selection
+     * @return
+     */
+    public static Iterator createFileScanForPathResult(String heapFileName, String label) {
+
+        AttrType[] attrTypes = new AttrType[2]; // fields attribute types
+        attrTypes[0] = new AttrType(AttrType.attrString);
+        attrTypes[1] = new AttrType(AttrType.attrString);
+
+        short[] stringSizes = new short[2]; // size of string field in node
+        stringSizes[0] = (short) Node.max_length_of_node_label;
+        stringSizes[1] = (short) Node.max_length_of_node_label;
+
+        FldSpec[] projList = new FldSpec[2]; //output - (head, tail)
+        RelSpec rel = new RelSpec(RelSpec.outer);
+        projList[0] = new FldSpec(rel, 1);
+        projList[1] = new FldSpec(rel, 2);
+
+        //add selecting condition
+        CondExpr[] condExprs = null;
+        if (label != null) {
+            condExprs = new CondExpr[2];
+            condExprs[0] = new CondExpr();
+            condExprs[1] = null;
+            // src node id = target nid
+            condExprs[0].op = new AttrOperator(AttrOperator.aopEQ);
+            condExprs[0].next = null;
+            condExprs[0].type1 = new AttrType(AttrType.attrSymbol);
+            condExprs[0].type2 = new AttrType(AttrType.attrString);
+            condExprs[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 1);
+            condExprs[0].operand2.string = label;
+        }
+        // create file scan; if label != null, use selection -> head = label || tail = label
+        FileScan fscan = null;
+        try {
+            fscan = new FileScan(heapFileName, attrTypes, stringSizes, (short) attrTypes.length, projList.length, projList, condExprs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return fscan;
+    }
+
+    /**
+     * store first round sorted iterator to file with given file name
+     * @param sort already sorted iterator from the first round, sort only on head
+     * @param file_name
+     * @param heads used to store each distinct head
+     * @return
+     */
+    public static Heapfile createHeapFileFromSort(Sort sort, String file_name, ArrayList<String> heads){
+        Heapfile result = null;
+        HashSet<String> set = new HashSet<>();
+        String head = null;
+        try {
+            result = new NodeHeapfile(file_name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Tuple tuple = null;
+
+        // insert data to heapfile
+        try {
+            while ((tuple = sort.get_next()) != null) {
+                head = tuple.getStrFld(1);
+                if (!set.contains(head)) {
+                    set.add(head);
+                    heads.add(head);
+                }
+                result.insertRecord(tuple.getTupleByteArray());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return result;
+    }
+
+    /**
+     * sort the result query data, and return the number of path
+     * @param result
+     * @param type type = 2 -> print in order; type = 3 -> print only distinct one
+     * @param fileName given fileName to store query result
+     * @return count of path
+     */
+    public static int sortAndPrint(ArrayList<Path> result, int type, String fileName){
+        ArrayList<String> heads = new ArrayList<>();
+        int count = 0;
+        //store path result into a file
+        String pathHeapFileName = fileName;
+        Heapfile heapfile = Util.createHeapFileFromPathResult(result, pathHeapFileName);
+        //create file scan
+        Iterator pathScan = Util.createFileScanForPathResult(pathHeapFileName, null);
+        AttrType[] attrType = new AttrType[2];
+        attrType[0] = new AttrType(AttrType.attrString);
+        attrType[1] = new AttrType(AttrType.attrString);
+        short[] attrSize = new short[2];
+        attrSize[0] = Node.max_length_of_node_label;
+        attrSize[1] = Node.max_length_of_node_label;
+        TupleOrder[] order = new TupleOrder[2];
+        order[0] = new TupleOrder(TupleOrder.Ascending);
+        order[1] = new TupleOrder(TupleOrder.Descending);
+
+        Sort sort = null;
+        try {
+            sort = new Sort(attrType, (short) 2, attrSize, pathScan, 1, order[0], Node.max_length_of_node_label, 50);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String sortedHeadHeapFileName = "PQ_result_head_sorted";
+        Heapfile heapfile2 = Util.createHeapFileFromSort(sort, sortedHeadHeapFileName, heads);
+        try {
+            sort.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Iterator pathScan2 = null;
+        String head = null;
+        Sort sort2 = null;
+
+        //for eliminate duplicate
+        AttrType[] edtype = {new AttrType(AttrType.attrString), new AttrType(AttrType.attrString)};
+        short[] edsizes = new short[2];
+        edsizes[0] = Node.max_length_of_node_label;
+        edsizes[1] = Node.max_length_of_node_label;
+        Iterator iterator = null;
+        for (int i = 0; i < heads.size(); i++) {
+            head = heads.get(i);
+            pathScan2 = Util.createFileScanForPathResult(sortedHeadHeapFileName, head);
+            try {
+                sort2 = new Sort(attrType, (short) 2, attrSize, pathScan2, 2, order[0], Node.max_length_of_node_label, 50);
+                if (type == 2) {//only sort
+                    iterator = sort2;
+                } else if (type == 3){// sort then eliminate duplicate
+                    iterator = new DuplElim(edtype, (short) 2, edsizes, sort2, 100, true);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Tuple tuplePath = null;
+            try {
+                while ((tuplePath = iterator.get_next()) != null) {
+                    count++;
+                    System.out.println(tuplePath.getStrFld(1) + " -> " + tuplePath.getStrFld(2));
+                }
+                pathScan2.close();
+                sort2.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            heapfile.deleteFile();
+            heapfile2.deleteFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+    /****************************** End of new methods Create by Yutang Nie*********************************/
 }

@@ -20,20 +20,22 @@ public class IoBuf implements GlobalConst {
      * @param buf
      */
     public IoBuf(IoBuf buf) {
+        this.done = buf.done;
+        this.dirty = buf.dirty;
+        this.t_per_pg = buf.t_per_pg;
+        this.t_in_buf = buf.t_in_buf;
+        this.t_wr_to_pg = buf.t_wr_to_pg;
+        this.t_wr_to_buf = buf.t_wr_to_buf;
+        this.curr_page = 0;
         this._bufs = buf._bufs;
         this._n_pages = buf._n_pages;
+        this.t_size = buf.t_size;
+        this.t_written = buf.t_written;
         this._temp_fd = buf._temp_fd;
         this._TEST_temp_fd = buf._TEST_temp_fd;
-        this.curr_page = buf.curr_page;
-        this.dirty = buf.dirty;
-        this.done = buf.done;
         this.flushed = buf.flushed;
         this.i_buf = buf.i_buf;
         this.mode = buf.mode;
-        this.t_in_buf = buf.t_in_buf;
-        this.t_written = buf.t_written;
-        this.t_wr_to_pg = buf.t_wr_to_pg;
-        this.t_size = buf.t_size;
         this.t_rd_from_pg = buf.t_rd_from_pg;
     }
 

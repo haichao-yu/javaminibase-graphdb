@@ -37,8 +37,6 @@ public class NewSortMergeJoins extends Iterator implements GlobalConst {
     private TupleOrder order;                      // The sorting order.
     private CondExpr OutputFilter[];
 
-    FileScan i1;
-    FileScan i2;
     IoBuf backupIO2 = new IoBuf();
 
     private boolean get_from_in1, get_from_in2;        // state variables for get_next
@@ -57,7 +55,6 @@ public class NewSortMergeJoins extends Iterator implements GlobalConst {
     private Tuple outputTuple;
     private FldSpec proj_list[];
     private int nOutFlds = 7;
-    private BufMgr buf;
 
     /**
      * constructor,initialization
@@ -77,7 +74,7 @@ public class NewSortMergeJoins extends Iterator implements GlobalConst {
 
     {
         order = new TupleOrder(TupleOrder.Ascending);
-        int amt_of_mem = 40;
+        int amt_of_mem = 100;
 
         // AttrTypes of outer and inner
         types1 = new AttrType[4];
@@ -136,16 +133,16 @@ public class NewSortMergeJoins extends Iterator implements GlobalConst {
         }
 
         // createFileScanForEdge and then sort
-        i1 = (FileScan) createFileScanForEdge(edgeFileName);
-        i2 = (FileScan) createFileScanForEdge(edgeFileName);
+        p_i1 = (FileScan) createFileScanForEdge(edgeFileName);
+        p_i2 = (FileScan) createFileScanForEdge(edgeFileName);
         try {
-            p_i1 = new Sort(types1, (short) len1, strSize1, i1, 2,
+            p_i1 = new Sort(types1, (short) len1, strSize1, p_i1, 2,
                         order, Edge.max_length_of_edge_label, amt_of_mem / 2);
         } catch (Exception e) {
             throw new SortException(e, "Sort failed");
         }
         try {
-            p_i2 = new Sort(types2, (short) len2, strSize2, i2, 1,
+            p_i2 = new Sort(types2, (short) len2, strSize2, p_i2, 1,
                     order, Edge.max_length_of_edge_label, amt_of_mem / 2);
         } catch (Exception e) {
             throw new SortException(e, "Sort failed");
@@ -199,7 +196,7 @@ public class NewSortMergeJoins extends Iterator implements GlobalConst {
         // Two buffer pages to store equivalence classes
         // NOTE -- THESE PAGES ARE NOT OBTAINED FROM THE BUFFER POOL
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        _n_pages = 1;
+        _n_pages = 10;
         _bufs1 = new byte[_n_pages][MINIBASE_PAGESIZE];
         _bufs2 = new byte[_n_pages][MINIBASE_PAGESIZE];
 
@@ -209,7 +206,6 @@ public class NewSortMergeJoins extends Iterator implements GlobalConst {
         try {
             temp_file_fd1 = new Heapfile(null);
             temp_file_fd2 = new Heapfile(null);
-
         } catch (Exception e) {
             throw new SortException(e, "Create heap file failed");
         }
@@ -318,9 +314,9 @@ public class NewSortMergeJoins extends Iterator implements GlobalConst {
                 TempTuple1.tupleCopy(tuple1);
                 TempTuple2.tupleCopy(tuple2);
 
-                io_buf1.init(_bufs1, 1, t1_size, temp_file_fd1);
-                io_buf2.init(_bufs2, 1, t2_size, temp_file_fd2);
-                backupIO2.init(_bufs2, 1, t2_size, temp_file_fd2);
+                io_buf1.init(_bufs1, _n_pages, t1_size, temp_file_fd1);
+                io_buf2.init(_bufs2, _n_pages, t2_size, temp_file_fd2);
+                backupIO2.init(_bufs2, _n_pages, t2_size, temp_file_fd2);
 
                 while (TupleUtils.CompareTupleWithTuple(sortFldType, tuple1,
                         joinCol1, TempTuple1, joinCol1) == 0) {
@@ -366,6 +362,7 @@ public class NewSortMergeJoins extends Iterator implements GlobalConst {
             if ((_tuple2 = io_buf2.Get(TempTuple2)) == null) {
                 if ((_tuple1 = io_buf1.Get(TempTuple1)) == null) {
                     process_next_block = true;
+                    while(backupIO2.Get(TempTuple2)!=null);
                     continue;                                // Process next equivalence class
                 } else {
                    io_buf2 = new IoBuf(backupIO2);
@@ -395,13 +392,11 @@ public class NewSortMergeJoins extends Iterator implements GlobalConst {
             IndexException {
         if (!closeFlag) {
             try {
-                i1.close();
                 p_i1.close();
             } catch (Exception e) {
                 throw new JoinsException(e, "SortMerge.java: error in closing iterator.");
             }
             try {
-                i2.close();
                 p_i2.close();
             } catch (Exception e) {
                 throw new JoinsException(e, "SortMerge.java: error in closing iterator.");

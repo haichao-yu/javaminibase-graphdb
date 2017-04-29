@@ -6,10 +6,16 @@ import edgeheap.EdgeHeapfile;
 import global.AttrOperator;
 import global.AttrType;
 import global.NID;
+import global.TupleOrder;
+import heap.Heapfile;
+import heap.InvalidTupleSizeException;
+import heap.InvalidTypeException;
 import heap.Tuple;
 import iterator.*;
+import nodeheap.Node;
 import nodeheap.NodeHeapfile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -88,6 +94,7 @@ public class TriangleExpression {
         types[2] = new AttrType(AttrType.attrNID);
         short[] sizes = null;
         ArrayList<Triangle> triResult = new ArrayList<>();
+        ArrayList<String> firstLabels = new ArrayList<>();
         try {
             tuple.setHdr((short) 3, types, sizes);
             while ((tuple = nlj.get_next()) != null) {
@@ -109,20 +116,127 @@ public class TriangleExpression {
                 System.out.println(triangle.toString());
             }
             System.out.println("Total number of triangles: " + triResult.size());
-        } else if (this.type == 2) { // 2.9 PQ1b: sort the results in the corresponding nodes of triangles
-            Collections.sort(triResult);
-            for (Triangle triangle : triResult) {
-                System.out.println(triangle.toString());
-            }
-            System.out.println("Total number of triangles: " + triResult.size());
-        } else { // 2.9 PQ1c: output only distinct label of nodes
-            Set<Triangle> set = new HashSet<>();
-            set.addAll(triResult);
-            for (Triangle triangle : set) {
-                System.out.println(triangle.toString());
-            }
-            System.out.println("Total number of triangles: " + set.size());
         }
+
+
+        else {
+            //store triangle result into a file
+            String triResultHeapFileName = "TQ_result";
+            Heapfile heapfile = Util.createHeapFileFromTriResult(triResult, triResultHeapFileName);
+            //create file scan
+            Iterator triScan = Util.createFileScanForTriResult(triResultHeapFileName, null, 1);
+            AttrType[] attrType = new AttrType[3];
+            attrType[0] = new AttrType(AttrType.attrString);
+            attrType[1] = new AttrType(AttrType.attrString);
+            attrType[2] = new AttrType(AttrType.attrString);
+            short[] attrSize = new short[3];
+            attrSize[0] = Node.max_length_of_node_label;
+            attrSize[1] = Node.max_length_of_node_label;
+            attrSize[2] = Node.max_length_of_node_label;
+            TupleOrder order = new TupleOrder(TupleOrder.Ascending);
+
+            int count = 0;
+
+            Sort sort = null;
+            try {
+                sort = new Sort(attrType, (short) 3, attrSize, triScan, 1, order, Node.max_length_of_node_label, 50);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            String sortedFirstLabelHeapFileName = "TQ_result_label1_sorted";
+            Heapfile heapfile2 = Util.createHeapFileFromTriSort(sort, sortedFirstLabelHeapFileName, firstLabels, 1);
+            try {
+                sort.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Iterator triScan2 = null;
+            String[] labels = new String[2];
+            Sort sort2 = null;
+            for (int i = 0; i < firstLabels.size(); i++) {
+                labels[0] = firstLabels.get(i);
+                labels[1] = null;
+                triScan2 = Util.createFileScanForTriResult(sortedFirstLabelHeapFileName, labels, 2);
+                try {
+                    sort2 = new Sort(attrType, (short) 3, attrSize, triScan2, 2, order, Node.max_length_of_node_label, 50);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                ArrayList<String> secondLabels = new ArrayList<>();
+                String sortedSecondLabelHeapFileName = "TQ_result_label2_sorted";
+                Heapfile heapfile3 = Util.createHeapFileFromTriSort(sort2, sortedSecondLabelHeapFileName, secondLabels, 2);
+                for (int j = 0; j < secondLabels.size(); j++) {
+                    labels[1] = secondLabels.get(j);
+                    Iterator triScan3 = null;
+                    Sort sort3 = null;
+                    triScan3 = Util.createFileScanForTriResult(sortedSecondLabelHeapFileName, labels, 3);
+                    try {
+                        sort3 = new Sort(attrType, (short) 3, attrSize, triScan3, 3, order, Node.max_length_of_node_label, 50);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    Tuple tupleTriangle = null;
+                    try {
+                        if(type == 2) {
+                            while ((tupleTriangle = sort3.get_next()) != null) {
+                                count++;
+                                System.out.println(tupleTriangle.getStrFld(1) + " -> " +
+                                        tupleTriangle.getStrFld(2) + " -> " + tupleTriangle.getStrFld(3));
+                            }
+                        }
+                        else {
+                            DuplElim ed = null;
+                            try {
+                                ed = new DuplElim(attrType, (short) 3, attrSize, sort3, 10, true);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            while ((tupleTriangle = ed.get_next()) != null) {
+                                count++;
+                                System.out.println(tupleTriangle.getStrFld(1) + " -> " +
+                                        tupleTriangle.getStrFld(2) + " -> " + tupleTriangle.getStrFld(3));
+                            }
+                            ed.close();
+                        }
+                        sort3.close();
+                        triScan3.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    sort2.close();
+                    triScan2.close();
+                    heapfile3.deleteFile();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                heapfile.deleteFile();
+                heapfile2.deleteFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            System.out.println("Total number of triangles: " + count);
+        }
+
+
+//        else if (this.type == 2) { // 2.9 PQ1b: sort the results in the corresponding nodes of triangles
+//            Collections.sort(triResult);
+//            for (Triangle triangle : triResult) {
+//                System.out.println(triangle.toString());
+//            }
+//            System.out.println("Total number of triangles: " + triResult.size());
+//        } else { // 2.9 PQ1c: output only distinct label of nodes
+//            Set<Triangle> set = new HashSet<>();
+//            set.addAll(triResult);
+//            for (Triangle triangle : set) {
+//                System.out.println(triangle.toString());
+//            }
+//            System.out.println("Total number of triangles: " + set.size());
+//        }
 
         System.out.print("Plan used: \n    ");
         if(this.type == 2)

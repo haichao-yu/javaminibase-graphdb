@@ -8,6 +8,7 @@ import edgeheap.EScan;
 import edgeheap.Edge;
 import edgeheap.EdgeHeapfile;
 import global.*;
+import heap.Heapfile;
 import heap.Tuple;
 import iterator.*;
 import nodeheap.NScan;
@@ -18,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Created by yhc on 3/15/17.
@@ -562,5 +564,172 @@ public class Util {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * first time to save the triangles into a heap file
+     * @param data
+     * @param file_name
+     */
+    public static Heapfile createHeapFileFromTriResult(ArrayList<Triangle> data, String file_name){
+        Heapfile result = null;
+        boolean status = OK;
+        try {
+            result = new NodeHeapfile(file_name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (status == OK && SystemDefs.JavabaseBM.getNumUnpinnedBuffers()
+                != SystemDefs.JavabaseBM.getNumBuffers()) {
+
+            System.err.println("*** Insertion left a page pinned\n");
+            status = FAIL;
+        }
+        Tuple tuple = null;
+        short num_of_filds = 3;
+        AttrType[] attrTypes = new AttrType[3];
+        attrTypes[0] = new AttrType(AttrType.attrString);
+        attrTypes[1] = new AttrType(AttrType.attrString);
+        attrTypes[2] = new AttrType(AttrType.attrString);
+        short[] strsize = {Node.max_length_of_node_label, Node.max_length_of_node_label, Node.max_length_of_node_label};
+
+        tuple = new Tuple();
+        try {
+            tuple.setHdr(num_of_filds,attrTypes,strsize);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // insert data to heapfile
+        if (status == OK) {
+            for (int i = 0; i < data.size(); i++) {
+                try {
+                    tuple.setStrFld(1, data.get(i).getTrianNode1());
+                    tuple.setStrFld(2, data.get(i).getTrianNode2());
+                    tuple.setStrFld(3, data.get(i).getTrianNode3());
+                    result.insertRecord(tuple.getTupleByteArray());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (status == OK && SystemDefs.JavabaseBM.getNumUnpinnedBuffers()
+                    != SystemDefs.JavabaseBM.getNumBuffers()) {
+
+                System.err.println("*** Insertion left a page pinned\n");
+                status = FAIL;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * create file scan for partially sort the triangle result
+     * @param heapFileName
+     * @param label Strings contain the already sorted field
+     * @param sortField the field to be sorted.
+     */
+    public static Iterator createFileScanForTriResult(String heapFileName, String[] label, int sortField) {
+
+        AttrType[] attrTypes = new AttrType[3]; // fields attribute types
+        attrTypes[0] = new AttrType(AttrType.attrString);
+        attrTypes[1] = new AttrType(AttrType.attrString);
+        attrTypes[2] = new AttrType(AttrType.attrString);
+
+        short[] stringSizes = new short[3]; // size of string field in node
+        stringSizes[0] = (short) Node.max_length_of_node_label;
+        stringSizes[1] = (short) Node.max_length_of_node_label;
+        stringSizes[2] = (short) Node.max_length_of_node_label;
+
+        FldSpec[] projList = new FldSpec[3]; //output - (l1, l2, l3)
+        RelSpec rel = new RelSpec(RelSpec.outer);
+        projList[0] = new FldSpec(rel, 1);
+        projList[1] = new FldSpec(rel, 2);
+        projList[2] = new FldSpec(rel, 3);
+
+        //add selecting condition
+        CondExpr[] condExprs = null;
+        if (label != null) {
+            if(sortField == 2) {
+                condExprs = new CondExpr[2];
+                condExprs[0] = new CondExpr();
+                condExprs[1] = null;
+                condExprs[0].op = new AttrOperator(AttrOperator.aopEQ);
+                condExprs[0].next = null;
+                condExprs[0].type1 = new AttrType(AttrType.attrSymbol);
+                condExprs[0].type2 = new AttrType(AttrType.attrString);
+                condExprs[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 1);
+                condExprs[0].operand2.string = label[0];
+            }
+            // the first two labels are already sorted, match them to sort the third.
+            if(sortField == 3) {
+                condExprs = new CondExpr[3];
+                condExprs[0] = new CondExpr();
+                condExprs[1] = new CondExpr();
+                condExprs[2] = null;
+                condExprs[0].op = new AttrOperator(AttrOperator.aopEQ);
+                condExprs[0].next = null;
+                condExprs[0].type1 = new AttrType(AttrType.attrSymbol);
+                condExprs[0].type2 = new AttrType(AttrType.attrString);
+                condExprs[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 1);
+                condExprs[0].operand2.string = label[0];
+                condExprs[1].op = new AttrOperator(AttrOperator.aopEQ);
+                condExprs[1].next = null;
+                condExprs[1].type1 = new AttrType(AttrType.attrSymbol);
+                condExprs[1].type2 = new AttrType(AttrType.attrString);
+                condExprs[1].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 2);
+                condExprs[1].operand2.string = label[1];
+            }
+        }
+        // create file scan on node heap file
+        FileScan fscan = null;
+        try {
+            fscan = new FileScan(heapFileName, attrTypes, stringSizes, (short) attrTypes.length, projList.length, projList, condExprs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return fscan;
+    }
+
+    /**
+     * create heapfile from trisort.
+     * @param sort
+     * @param file_name
+     * @param sortLabels - the labels of the field to be sorted
+     * @param sortField - the offset of the field to be sorted
+     */
+    public static Heapfile createHeapFileFromTriSort(Sort sort, String file_name, ArrayList<String> sortLabels, int sortField){
+        Heapfile result = null;
+        boolean status = OK;
+        HashSet<String> set = new HashSet<>();
+        String sortLabel = null;
+        try {
+            result = new NodeHeapfile(file_name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Tuple tuple = null;
+        short num_of_filds = 3;
+        AttrType[] attrTypes = new AttrType[3];
+        attrTypes[0] = new AttrType(AttrType.attrString);
+        attrTypes[1] = new AttrType(AttrType.attrString);
+        attrTypes[2] = new AttrType(AttrType.attrString);
+        short[] strsize = {Node.max_length_of_node_label, Node.max_length_of_node_label, Node.max_length_of_node_label};
+        // insert data to heapfile
+        if (status == OK) {
+            try {
+                while ((tuple = sort.get_next()) != null) {
+                    sortLabel = tuple.getStrFld(sortField);
+                    if (!set.contains(sortLabel)) {
+                        set.add(sortLabel);
+                        sortLabels.add(sortLabel);
+                    }
+                    result.insertRecord(tuple.getTupleByteArray());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 }

@@ -1,7 +1,6 @@
 package graphtests;
 
 import java.io.IOException;
-import java.util.Scanner;
 
 /**
  * Created by yhc on 3/14/17.
@@ -20,11 +19,10 @@ public class GraphTest {
             System.err.println("IO error: " + e);
         }
 
-        /*
-        String[] arguments1 = {"batchnodeinsert", "Phase3MyNodeInsertData.txt", "yhc"};
+        String[] arguments1 = {"batchnodeinsert", "Phase3DemoNodeInsertData.txt", "yhc"};
         BatchNodeInsertion.runBatchNodeInsertion(arguments1);
 
-        String[] arguments2 = {"batchedgeinsert", "Phase3MyEdgeInsertData.txt", "yhc"};
+        String[] arguments2 = {"batchedgeinsert", "Phase3DemoEdgeInsertData.txt", "yhc"};
         BatchEdgeInsertion.runBatchEdgeInsertion(arguments2);
 
         String[] arguments3 = {"batchnodedelete", "NodeDeleteData.txt", "yhc"};
@@ -36,10 +34,11 @@ public class GraphTest {
         String[] arguments5 = {"nodequery", "yhc", "700", "1", "1"};
         // SimpleNodeQuery.runSimpleNodeQuery(arguments5);
 
-        PathExpressionType1 test1 = new PathExpressionType1("yhc", "d:(1,1,1,1,1)/l:2", 1);
+        PathExpressionType1 test1 = new PathExpressionType1("yhc", "d:(1,4,1,4,1)/d:(7,2,7,2,7)/d:(11,12,13,14,15)", 3);
         test1.Query();
         test1.close();
 
+        /*
         PathExpressionType2 test2 = new PathExpressionType2("yhc", "l:1/w:2/w:2/w:2", 3);
         test2.Query();
         test2.close();
@@ -53,6 +52,7 @@ public class GraphTest {
         test7.close();
         */
 
+        /*
         while (true) {
             Scanner in = new Scanner(System.in);
             System.out.println("Please input your command (input \"help\" to learn supported operations, input \"exit\" to exit):");
@@ -147,6 +147,7 @@ public class GraphTest {
                 System.out.println();
             }
         }
+        */
 
         // detete all data file
         try {

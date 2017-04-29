@@ -1,20 +1,19 @@
 package graphtests;
 
 import ZIndex.ZFile;
-import btree.BTreeFile;
+import btree.*;
 import diskmgr.PCounter;
 import edgeheap.EdgeHeapfile;
 import global.AttrOperator;
 import global.AttrType;
 import global.NID;
+import global.TupleOrder;
 import heap.Tuple;
 import iterator.*;
+import nodeheap.Node;
 import nodeheap.NodeHeapfile;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by yhc on 4/9/17.
@@ -91,7 +90,7 @@ public class PathExpressionType2 {
     public Iterator Operator(NID nid) {
 
         // create FileScan for node
-        FileScan nodeScan = (FileScan) Util.createFileScanForNode(nodeHeapFileName);
+        FileScan nodeScan = (FileScan) Util.createFileScanForNode(nodeHeapFileName, null);
 
         // Initialize joinExpres
         CondExpr[] joinExprs = new CondExpr[3];
@@ -159,64 +158,105 @@ public class PathExpressionType2 {
      */
     public void Query() {
 
+        /* for create sort iterator and duplicate eliminate iterator */
+        AttrType[] attrTypes = new AttrType[2]; // fields attribute types
+        attrTypes[0] = new AttrType(AttrType.attrString);
+        attrTypes[1] = new AttrType(AttrType.attrDesc);
+
+        short[] stringSizes = new short[1]; // size of string field in node
+        stringSizes[0] = (short) Node.max_length_of_node_label;
+
+        TupleOrder[] order = new TupleOrder[2];
+        order[0] = new TupleOrder(TupleOrder.Ascending);
+        order[1] = new TupleOrder(TupleOrder.Descending);
+
+        FldSpec[] projList = new FldSpec[2]; //output - node format
+        RelSpec rel = new RelSpec(RelSpec.outer);
+        projList[0] = new FldSpec(rel, 1);
+        projList[1] = new FldSpec(rel, 2);
+
+        int sortField = 1; // sort on node label
+        int sortFieldLength = Node.max_length_of_node_label;
+        int SORTPGNUM = 13;
+        /* --------------------------------------------------------- */
+
         ArrayList<Path> result = new ArrayList<>();
 
-        // get NID from first NN
         String firstNN = EN[0]; // EN[0] is a NN
-        ArrayList<NID> targetNIDs = Util.getNIDsFromFirstNN(firstNN, zf, btfNodeLabel);
-
-        // for every NID, do Operator(NID)
-        for (NID nid : targetNIDs) {
-
-            String head = null;
+        Iterator heads = Util.getFirstNodesFromFirstNN(firstNN, nodeHeapFileName);
+        if (this.type == 2) { // sort
             try {
-                head = nhf.getNode(nid).getLabel();
+                heads = new Sort(attrTypes, (short) attrTypes.length, stringSizes, heads, sortField, order[0], sortFieldLength, SORTPGNUM);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            Iterator tails = Operator(nid);
-            Tuple tuple = null;
+        }
+        if (this.type == 3) { // duplicate eliminate
             try {
-                while ((tuple = tails.get_next()) != null) {
-                    String tail = tuple.getStrFld(1);
-                    result.add(new Path(head, tail));
+                heads = new DuplElim(attrTypes, (short) 2, stringSizes, heads, 10, false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Tuple head = null;
+        try {
+            while ((head = heads.get_next()) != null) {
+                String head_label = head.getStrFld(1); // node label is unique
+                BTFileScan btfScan = btfNodeLabel.new_scan(new StringKey(head_label), new StringKey(head_label));
+                KeyDataEntry entry = btfScan.get_next();
+                NID nid = new NID(((LeafData) (entry.data)).getData().pageNo, ((LeafData) (entry.data)).getData().slotNo);
+                Iterator tails = Operator(nid);
+                if (this.type == 2) { // sort
+                    try {
+                        tails = new Sort(attrTypes, (short) attrTypes.length, stringSizes, tails, sortField, order[0], sortFieldLength, SORTPGNUM);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-            } catch (Exception e) {
-                System.err.println("" + e);
-                e.printStackTrace();
-                Runtime.getRuntime().exit(1);
+                if (this.type == 3) { // duplicate eliminate
+                    try {
+                        tails = new DuplElim(attrTypes, (short) 2, stringSizes, tails, 10, false);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                Tuple tail = null;
+                try {
+                    while ((tail = tails.get_next()) != null) {
+                        String tail_label = tail.getStrFld(1);
+                        result.add(new Path(head_label, tail_label));
+                    }
+                } catch (Exception e) {
+                    System.err.println("" + e);
+                    e.printStackTrace();
+                    Runtime.getRuntime().exit(1);
+                }
+                try {
+                    tails.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                btfScan.DestroyBTreeFileScan();
             }
-            try {
-                tails.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            System.err.println("" + e);
+            e.printStackTrace();
+            Runtime.getRuntime().exit(1);
+        }
+        try {
+            heads.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        if (this.type == 1) { // PQ1a: output directly
-            for (Path path : result) {
-                System.out.println(path.toString());
-            }
-            System.out.println("Total number of paths: " + result.size());
-        } else if (this.type == 2) { // PQ1b: sort the results in the labels of head and tail labels, and output
-            Collections.sort(result);
-            for (Path path : result) {
-                System.out.println(path.toString());
-            }
-            System.out.println("Total number of paths: " + result.size());
-        } else { // PQ1c: output only distinct head/tail node label pairs
-            Set<Path> set = new HashSet<>();
-            set.addAll(result);
-            for (Path path : set) {
-                System.out.println(path.toString());
-            }
-            System.out.println("Total number of paths: " + set.size());
+        for (Path path : result) {
+            System.out.println(path.toString());
         }
+        System.out.println("Total number of paths: " + result.size());
 
         // print query plan
-        System.out.println("Plan used (from current node to next node through EN):\n" +
-                "Pi(Node) ((Pi(Edge) (Node |X| (source, edge_condition=EN) Edge)) |X| (destination, node_condition=null) Node)");
+        System.out.println("Plan used (from current node to next node through NN):\n" +
+                "Pi(Node) ((Pi(Edge) (Node |X| (source, edge_condition=null) Edge)) |X| (destination, node_condition=NN) Node)");
 
         // print statistic information
         Util.printStatInfo(nhf, ehf);

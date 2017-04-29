@@ -1,6 +1,5 @@
 package iterator;
 
-import bufmgr.BufMgr;
 import bufmgr.PageNotReadException;
 import edgeheap.Edge;
 import global.AttrOperator;
@@ -133,8 +132,8 @@ public class NewSortMergeJoins extends Iterator implements GlobalConst {
         }
 
         // createFileScanForEdge and then sort
-        p_i1 = (FileScan) createFileScanForEdge(edgeFileName);
-        p_i2 = (FileScan) createFileScanForEdge(edgeFileName);
+        p_i1 = (FileScan) createFileScanForEdge(edgeFileName, null);
+        p_i2 = (FileScan) createFileScanForEdge(edgeFileName, null);
         try {
             p_i1 = new Sort(types1, (short) len1, strSize1, p_i1, 2,
                         order, Edge.max_length_of_edge_label, amt_of_mem / 2);

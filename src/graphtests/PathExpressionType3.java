@@ -87,7 +87,7 @@ public class PathExpressionType3 {
     private Iterator operator_3 (NID nid) {
 
         // create iterator for all node by scanning nodeHeapFile
-        FileScan nodeScan = (FileScan) Util.createFileScanForNode(nodeHeapFileName);
+        FileScan nodeScan = (FileScan) Util.createFileScanForNode(nodeHeapFileName, null);
         // Initialize joinExpres
         CondExpr[] joinExprs = new CondExpr[2];
         joinExprs[0] = new CondExpr();

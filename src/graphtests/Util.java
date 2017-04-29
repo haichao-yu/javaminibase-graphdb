@@ -337,9 +337,10 @@ public class Util {
      * create a FileScan (iterator) for node
      *
      * @param nodeHeapFileName
+     * @param outFilter
      * @return
      */
-    public static Iterator createFileScanForNode(String nodeHeapFileName) {
+    public static Iterator createFileScanForNode(String nodeHeapFileName, CondExpr[] outFilter) {
 
         AttrType[] attrTypes = new AttrType[2]; // fields attribute types
         attrTypes[0] = new AttrType(AttrType.attrString);
@@ -356,7 +357,7 @@ public class Util {
         // create file scan on node heap file
         FileScan fscan = null;
         try {
-            fscan = new FileScan(nodeHeapFileName, attrTypes, stringSizes, (short) attrTypes.length, projList.length, projList, null);
+            fscan = new FileScan(nodeHeapFileName, attrTypes, stringSizes, (short) attrTypes.length, projList.length, projList, outFilter);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -368,9 +369,10 @@ public class Util {
      * create a FileScan (iterator) for edge
      *
      * @param edgeHeapFileName
+     * @param outFilter
      * @return
      */
-    public static Iterator createFileScanForEdge(String edgeHeapFileName) {
+    public static Iterator createFileScanForEdge(String edgeHeapFileName, CondExpr[] outFilter) {
 
         AttrType[] attrTypes = new AttrType[4];
         attrTypes[0] = new AttrType(AttrType.attrNID);
@@ -391,7 +393,7 @@ public class Util {
         // create file scan on edge heap file
         FileScan fscan = null;
         try {
-            fscan = new FileScan(edgeHeapFileName, attrTypes, stringSizes, (short) attrTypes.length, projList.length, projList, null);
+            fscan = new FileScan(edgeHeapFileName, attrTypes, stringSizes, (short) attrTypes.length, projList.length, projList, outFilter);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -546,6 +548,45 @@ public class Util {
         }
 
         return targetNIDs;
+    }
+
+    /**
+     * get first node iterator given first NN (utilizing outFilter of FileScan)
+     *
+     * @param oriFirstNN
+     * @param NodeHeapfileName
+     * @return
+     */
+    public static Iterator getFirstNodesFromFirstNN(String oriFirstNN, String NodeHeapfileName) {
+
+        CondExpr[] outFilter = new CondExpr[2];
+        outFilter[0] = new CondExpr();
+        outFilter[1] = null;
+
+        String firstNN = oriFirstNN.substring(2);
+        if (oriFirstNN.startsWith("d:")) { // first NN is node descriptor
+            String strDesc = firstNN.substring(1, firstNN.length() - 1);
+            String[] dimensions = strDesc.split(",");
+            Descriptor targetDescriptor = new Descriptor(Integer.parseInt(dimensions[0]), Integer.parseInt(dimensions[1]), Integer.parseInt(dimensions[2]), Integer.parseInt(dimensions[3]), Integer.parseInt(dimensions[4]));
+
+            outFilter[0].op = new AttrOperator(AttrOperator.aopEQ);
+            outFilter[0].next = null;
+            outFilter[0].type1 = new AttrType(AttrType.attrSymbol);
+            outFilter[0].type2 = new AttrType(AttrType.attrDesc);
+            outFilter[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 2);
+            outFilter[0].operand2.desc = new Descriptor(targetDescriptor);
+        } else { // first NN is node label
+            String targeLabel = firstNN;
+            outFilter[0].op = new AttrOperator(AttrOperator.aopEQ);
+            outFilter[0].next = null;
+            outFilter[0].type1 = new AttrType(AttrType.attrSymbol);
+            outFilter[0].type2 = new AttrType(AttrType.attrString);
+            outFilter[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 1);
+            outFilter[0].operand2.string = new String(firstNN);
+        }
+
+        Iterator iterator = Util.createFileScanForNode(NodeHeapfileName, outFilter);
+        return iterator;
     }
 
     /**

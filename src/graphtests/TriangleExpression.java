@@ -124,7 +124,7 @@ public class TriangleExpression {
             System.out.println("Total number of triangles: " + set.size());
         }
 
-        System.out.print("Plan used: \n    ");
+        System.out.print("Plan used: \n");
         if(this.type == 2)
             System.out.print("SORT ");
         if(this.type == 3)

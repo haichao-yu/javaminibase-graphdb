@@ -2,7 +2,10 @@ package graphtests;
 
 import ZIndex.DescriptorKey;
 import ZIndex.ZFile;
-import btree.*;
+import btree.BTreeFile;
+import btree.IntegerKey;
+import btree.KeyClass;
+import btree.StringKey;
 import diskmgr.PCounter;
 import edgeheap.EScan;
 import edgeheap.Edge;
@@ -511,6 +514,7 @@ public class Util {
      * @param btfNodeLabel btree for node label
      * @return
      */
+    /*
     public static ArrayList<NID> getNIDsFromFirstNN(String oriFirstNN, ZFile zf, BTreeFile btfNodeLabel) {
 
         ArrayList<NID> targetNIDs = null;
@@ -551,6 +555,7 @@ public class Util {
 
         return targetNIDs;
     }
+    */
 
     /**
      * get first node iterator given first NN (utilizing outFilter of FileScan)

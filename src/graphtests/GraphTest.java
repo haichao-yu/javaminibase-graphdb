@@ -38,15 +38,15 @@ public class GraphTest {
         test1.Query();
         test1.close();
 
-        /*
-        PathExpressionType2 test2 = new PathExpressionType2("yhc", "l:1/w:2/w:2/w:2", 3);
+        PathExpressionType2 test2 = new PathExpressionType2("yhc", "l:2/l:2_1/l:1_4", 3);
         test2.Query();
         test2.close();
 
-        PathExpressionType3 test3 = new PathExpressionType3("yhc", "l:1//w:5", 1);
+        PathExpressionType3 test3 = new PathExpressionType3("yhc", "d:(7,2,7,2,7)//n:5", 3);
         test3.Query();
         test3.close();
 
+        /*
         TriangleExpression test7 = new TriangleExpression("yhc", "w:3;w:3;w:3", 2);
         test7.Query();
         test7.close();

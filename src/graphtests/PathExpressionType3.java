@@ -1,7 +1,7 @@
 package graphtests;
 
 import ZIndex.ZFile;
-import btree.BTreeFile;
+import btree.*;
 import diskmgr.PCounter;
 import edgeheap.EdgeHeapfile;
 import global.AttrOperator;
@@ -9,10 +9,10 @@ import global.AttrType;
 import global.NID;
 import heap.Tuple;
 import iterator.*;
-import iterator.Iterator;
 import nodeheap.NodeHeapfile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Created by nyt on 4/14/17.
@@ -124,8 +124,28 @@ public class PathExpressionType3 {
         else boundtype = 1;
 
         // get NID from NN
+        ArrayList<NID> targetNIDs = new ArrayList<>();
         String firstNN = expr[0];
-        ArrayList<NID> targetNIDs = Util.getNIDsFromFirstNN(firstNN, zf, btfNodeLabel);
+        Iterator heads = Util.getFirstNodesFromFirstNN(firstNN, nodeHeapFileName);
+        Tuple h = null;
+        try {
+            while ((h = heads.get_next()) != null) {
+                String head_label = h.getStrFld(1); // node label is unique
+                BTFileScan btfScan = btfNodeLabel.new_scan(new StringKey(head_label), new StringKey(head_label));
+                KeyDataEntry entry = btfScan.get_next();
+                NID nid = new NID(((LeafData) (entry.data)).getData().pageNo, ((LeafData) (entry.data)).getData().slotNo);
+                targetNIDs.add(nid);
+                btfScan.DestroyBTreeFileScan();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            heads.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // get bound from expr;
         int bound = Integer.parseInt(expr[1].substring(2));
         int temp_bound = 0;

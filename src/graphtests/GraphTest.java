@@ -1,6 +1,6 @@
 package graphtests;
 
-import java.io.IOException;
+import java.util.Scanner;
 
 /**
  * Created by yhc on 3/14/17.
@@ -10,6 +10,7 @@ public class GraphTest {
 
     public static void main(String[] args) {
 
+        /*
         // detete all data file
         try {
             Runtime.getRuntime().exec("/bin/rm -rf ../../tmpDBFile");
@@ -18,7 +19,9 @@ public class GraphTest {
         } catch (IOException e) {
             System.err.println("IO error: " + e);
         }
+        */
 
+        /*
         String[] arguments1 = {"batchnodeinsert", "Phase3DemoNodeInsertData.txt", "yhc"};
         BatchNodeInsertion.runBatchNodeInsertion(arguments1);
 
@@ -46,13 +49,11 @@ public class GraphTest {
         test3.Query();
         test3.close();
 
-        /*
         TriangleExpression test7 = new TriangleExpression("yhc", "w:3;w:3;w:3", 2);
         test7.Query();
         test7.close();
         */
 
-        /*
         while (true) {
             Scanner in = new Scanner(System.in);
             System.out.println("Please input your command (input \"help\" to learn supported operations, input \"exit\" to exit):");
@@ -142,13 +143,17 @@ public class GraphTest {
                 TriangleExpression tqc = new TriangleExpression(arguments[1], arguments[2], 3);
                 tqc.Query();
                 tqc.close();
+            } else if (arguments.length == 3 && arguments[0].equals("TQd")) {
+                TriangleExpression tqc = new TriangleExpression(arguments[1], arguments[2], 4);
+                tqc.Query();
+                tqc.close();
             } else {
                 System.out.println("Invalid command! Please input again!");
                 System.out.println();
             }
         }
-        */
 
+        /*
         // detete all data file
         try {
             Runtime.getRuntime().exec("/bin/rm -rf ../../tmpDBFile");
@@ -157,5 +162,6 @@ public class GraphTest {
         } catch (IOException e) {
             System.err.println("IO error: " + e);
         }
+        */
     }
 }

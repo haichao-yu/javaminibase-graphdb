@@ -154,6 +154,7 @@ public class TriangleExpression {
             Iterator triScan2 = null;
             String[] labels = new String[2];
             Sort sort2 = null;
+            Set<Triangle> distinctTriangles = new HashSet<>();
             for (int i = 0; i < firstLabels.size(); i++) {
                 labels[0] = firstLabels.get(i);
                 labels[1] = null;
@@ -178,14 +179,14 @@ public class TriangleExpression {
                     }
                     Tuple tupleTriangle = null;
                     try {
-                        if(type == 2) {
+                        if(this.type == 2) {
                             while ((tupleTriangle = sort3.get_next()) != null) {
                                 count++;
                                 System.out.println(tupleTriangle.getStrFld(1) + " -> " +
                                         tupleTriangle.getStrFld(2) + " -> " + tupleTriangle.getStrFld(3));
                             }
                         }
-                        else {
+                        else if (this.type == 3 || this.type == 4){
                             DuplElim ed = null;
                             try {
                                 ed = new DuplElim(attrType, (short) 3, attrSize, sort3, 10, true);
@@ -193,9 +194,14 @@ public class TriangleExpression {
                                 e.printStackTrace();
                             }
                             while ((tupleTriangle = ed.get_next()) != null) {
-                                count++;
-                                System.out.println(tupleTriangle.getStrFld(1) + " -> " +
-                                        tupleTriangle.getStrFld(2) + " -> " + tupleTriangle.getStrFld(3));
+                                if(this.type == 4){
+                                    count++;
+                                    System.out.println(tupleTriangle.getStrFld(1) + " -> " +
+                                            tupleTriangle.getStrFld(2) + " -> " + tupleTriangle.getStrFld(3));
+                                }
+                                Triangle triangle = new Triangle(tupleTriangle.getStrFld(1),
+                                        tupleTriangle.getStrFld(2), tupleTriangle.getStrFld(3));
+                                distinctTriangles.add(triangle);
                             }
                             ed.close();
                         }
@@ -219,7 +225,14 @@ public class TriangleExpression {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            System.out.println("Total number of triangles: " + count);
+            if(this.type == 3) {
+                for (Triangle triangle : distinctTriangles) {
+                    System.out.println(triangle.toString());
+                }
+                System.out.println("Total number of triangles: " + distinctTriangles.size());
+            }
+            else
+                System.out.println("Total number of triangles: " + count);
         }
 
 

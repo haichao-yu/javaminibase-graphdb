@@ -14,6 +14,14 @@ public class Path implements Comparable<Path> {
         tail = t;
     }
 
+    public String getHead() {
+        return head;
+    }
+
+    public String getTail() {
+        return tail;
+    }
+
     @Override
     public int compareTo(Path o) {
 

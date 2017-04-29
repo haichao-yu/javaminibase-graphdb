@@ -62,6 +62,18 @@ public class Triangle implements Comparable<Triangle> {
         }
     }
 
+    public String getTrianNode1(){
+        return this.trianNode1;
+    }
+
+    public String getTrianNode2(){
+        return this.trianNode2;
+    }
+
+    public String getTrianNode3(){
+        return this.trianNode3;
+    }
+
     @Override
     public String toString() {
         return trianNode1 + " -> " + trianNode2 + " -> " + trianNode3;

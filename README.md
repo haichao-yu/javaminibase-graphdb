@@ -44,7 +44,7 @@ make clean
 
 This graph DBMS support following opearations:
 
-#### Batch Node Insert
+### - Batch Node Insert
 ```
 batchnodeinsert NODE_FILE_NAME GRAPHDB_NAME
 ```
@@ -55,7 +55,7 @@ nodelabel2 nodedesc21 nodedesc22 nodedesc23 nodedesc24 nodedesc25
 ...
 ```
 
-#### Batch Edge Insert
+### - Batch Edge Insert
 ```
 batchedgeinsert EDGE_FILE_NAME GRAPHDB_NAME
 ```
@@ -66,7 +66,7 @@ sourcelabel2 destlabel2 edgelabel2 edgeweight2
 ...
 ```
 
-#### Batch Node Delete
+### - Batch Node Delete
 ```
 batchnodedelete NODE_FILE_NAME GRAPHDB_NAME
 ```
@@ -77,7 +77,7 @@ nodelabel2
 ...
 ```
 
-#### Batch Edge Deletion
+### - Batch Edge Deletion
 ```
 batchedgedelete EDGE_FILE_NAME GRAPHDB_NAME
 ```
@@ -88,7 +88,7 @@ sourcelabel2 destlabel2 edgelabel2
 ...
 ```
 
-#### Simple Node Query
+### - Simple Node Query
 ```
 nodequery GRAPHDB_NAME NUMBUF QTYPE INDEX [QUERYOPTIONS]
 ```
@@ -105,7 +105,7 @@ Minibase will use __at most__ NUMBUF buffer pages to run the query.
 
 At the end of the query, the program will output the number of disk pages that were read and written (separately).
 
-#### Simple Edge Query
+### - Simple Edge Query
 ```
 edgequery GRAPHDB_NAME NUMBUF QTYPE INDEX [QUERYOPTIONS]
 ```
@@ -123,7 +123,7 @@ Minibase will use __at most__ NUMBUF buffer pages to run the query.
 
 At the end of the query, the program will output the number of disk pages that were read and written (separately).
 
-#### Path Expression Query, Type 1
+### - Path Expression Query, Type 1
 ```
 PQ1a GRAPHDB_NAME NN/.../NN
 ```
@@ -139,7 +139,7 @@ PQ1c GRAPHDB_NAME NN/.../NN
 ```
 This query will returns the same data, but only **distinct** head/tail node label pairs.
 
-#### Path Expression Query, Type 2
+### - Path Expression Query, Type 2
 ```
 PQ2a GRAPHDB_NAME NN/EN/.../EN
 ```
@@ -157,7 +157,7 @@ PQ2c GRAPHDB_NAME NN/EN/.../EN
 ```
 This query will returns the same data, but only **distinct** head/tail node label pairs.
 
-#### Path Expression Query, Type 3
+### - Path Expression Query, Type 3
 ```
 PQ3a GRAPHDB_NAME NN//Bound
 ```
@@ -175,7 +175,7 @@ PQ3c GRAPHDB_NAME NN//Bound
 ```
 This query will returns the same data, but only **distinct** head/tail node label pairs.
 
-#### Triangle Query
+### - Triangle Query
 ```
 TQa GRAPHDB_NAME EN;EN;EN
 ```
